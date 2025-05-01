@@ -1,0 +1,22 @@
+package EmployeePayroll;
+
+import java.sql.*;
+
+public class TestConnection {
+    public static void main(String[] args) {
+        String url = "jdbc:sqlserver://localhost:1433;databaseName=employeeDB;encrypt=true;trustServerCertificate=true";
+        String user = "sa";
+        String password = "ksbl1234";
+
+        try {
+            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+            Connection con = DriverManager.getConnection(url, user, password);
+            System.out.println("✅ Connection successful!");
+            con.close();
+        } catch (Exception e) {
+            System.out.println("❌ Connection failed.");
+            e.printStackTrace();
+        }
+    }
+}
+
