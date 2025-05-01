@@ -1,23 +1,22 @@
 package EmployeePayroll;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
 public class ConnectionClass {
-    Statement stm;              //Object to handle and execute SQL Queries
-    Connection con;             //Object to set up a connection to the database
-    public ConnectionClass(){
-        try{
-            Class.forName("com.mysql.cj.jdbc.Driver");      // Loading MySQL JDBC driver for communication with database.
-
-            // Establish the connection to the database
-            con = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/employeepayroll", "root", "0007");
-            stm = con.createStatement();
-        }
-        catch(Exception ex){
-            ex.printStackTrace();
-        }
-    }
-
     public static void main(String[] args) {
-        new ConnectionClass();
+        String url = "jdbc:sqlserver://localhost:1433;databaseName=LibraryDB;encrypt=true;trustServerCertificate=true";
+        String user = "sa";
+        String password = "ksbl1234";
+
+        try {
+            Connection conn = DriverManager.getConnection(url, user, password);
+            System.out.println("✅ Connected to SQL Server successfully!");
+            conn.close();
+        } catch (SQLException e) {
+            System.out.println("❌ Connection failed.");
+            e.printStackTrace();
+        }
     }
 }
