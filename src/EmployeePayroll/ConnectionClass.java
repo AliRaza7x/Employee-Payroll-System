@@ -20,4 +20,18 @@ public class ConnectionClass {
             e.printStackTrace();
         }
     }
+
+    public static Connection getConnection() {
+        String url = "jdbc:sqlserver://localhost:1433;databaseName=employeeDB;encrypt=true;trustServerCertificate=true";
+        String user = "sa";
+        String password = "ksbl1234";
+
+        try {
+            Connection con = DriverManager.getConnection(url, user, password);
+            return con;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }
