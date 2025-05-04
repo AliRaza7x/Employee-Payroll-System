@@ -7,15 +7,15 @@ import java.awt.event.*;
 public class AdminHome extends JFrame implements ActionListener {
     JButton addEmpBtn, addAdminBtn, searchEmpBtn, deleteEmpBtn, updateEmpBtn, generatePayrollBtn, exitBtn;
     JLabel background;
-    int userID;
 
-    public AdminHome(int userID) {
+
+    public AdminHome() {
         setTitle("Admin Homepage");
         setSize(800, 500);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(null);
-        this.userID = userID;
+
 
         // Load and scale background image
         ImageIcon bgIcon = new ImageIcon(ClassLoader.getSystemResource("Images/background.jpg"));
@@ -80,7 +80,7 @@ public class AdminHome extends JFrame implements ActionListener {
         if (e.getSource() == addEmpBtn) {
              new AddUserWindow().setVisible(true);
         } else if (e.getSource() == addAdminBtn) {
-            // new AddAdmin().setVisible(true);
+             new AddAdmin().setVisible(true);
         } else if (e.getSource() == searchEmpBtn) {
             // new SearchEmployee().setVisible(true);
         } else if (e.getSource() == deleteEmpBtn) {

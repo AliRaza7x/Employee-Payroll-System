@@ -75,7 +75,7 @@ public class Login extends JFrame implements ActionListener {
             try {
                 ConnectionClass obj = new ConnectionClass();
                 System.out.println("obj.con = " + obj.con);
-                String query = "SELECT user_id, role FROM users WHERE username = ? AND password = ?";
+                String query = "SELECT role FROM users WHERE username = ? AND password = ?";
                 PreparedStatement pst = obj.con.prepareStatement(query);
                 pst.setString(1, username);
                 pst.setString(2, password);
@@ -83,12 +83,11 @@ public class Login extends JFrame implements ActionListener {
 
                 if (rs.next()) {
                     String role = rs.getString("role");
-                    int userID = rs.getInt("user_id");
 
                     if ("admin".equalsIgnoreCase(role)) {
-                        new AdminHome(userID).setVisible(true);
+                        new AdminHome().setVisible(true);
                     } else if ("user".equalsIgnoreCase(role)) {
-                        new UserHome(userID).setVisible(true);
+                        new UserHome().setVisible(true);
                     }
                     this.setVisible(false);
                 } else {

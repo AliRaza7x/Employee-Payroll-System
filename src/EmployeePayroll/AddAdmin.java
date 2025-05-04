@@ -3,13 +3,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.sql.*;
 
-public class AddUserWindow extends JFrame {
+public class AddAdmin extends JFrame {
     JTextField usernameField;
     JPasswordField passwordField;
     JLabel userIdLabel;
 
-    public AddUserWindow() {
-        setTitle("Add New User");
+    public AddAdmin() {
+        setTitle("Add New Admin");
         setSize(400, 250);
         setLayout(new GridLayout(5, 2, 10, 10));
 
@@ -22,7 +22,7 @@ public class AddUserWindow extends JFrame {
         add(new JLabel("Password:"));
         add(passwordField);
         add(new JLabel("Role:"));
-        add(new JLabel("user")); // fixed
+        add(new JLabel("admin")); // fixed
         JButton okBtn = new JButton("OK");
         JButton backBtn = new JButton("Go Back");
         add(okBtn);
@@ -37,13 +37,13 @@ public class AddUserWindow extends JFrame {
                 CallableStatement stmt = con.prepareCall("{call InsertUser(?, ?, ?, ?)}");
                 stmt.setString(1, usernameField.getText());
                 stmt.setString(2, new String(passwordField.getPassword()));
-                stmt.setString(3, "user");
+                stmt.setString(3, "admin");
                 stmt.registerOutParameter(4, Types.INTEGER);
                 stmt.execute();
 
                 int newUserId = stmt.getInt(4);
                 userIdLabel.setText("User ID: " + newUserId);
-                JOptionPane.showMessageDialog(this, "User Created. ID: " + newUserId);
+                JOptionPane.showMessageDialog(this, "Admin Created. ID: " + newUserId);
                 new AddEmployee(newUserId); // next screen
                 dispose();
             } catch (Exception ex) {

@@ -7,15 +7,13 @@ import java.awt.event.*;
 public class UserHome extends JFrame implements ActionListener {
     JButton checkInBtn, checkOutBtn, viewLeavesBtn, requestLeaveBtn, generateSlipBtn, exitBtn;
     JLabel background;
-    int userID;
 
-    public UserHome(int userID) {
+    public UserHome() {
         setTitle("User Homepage");
         setSize(800, 500);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(null);
-        this.userID = userID;
 
         // Load and scale background image
         ImageIcon bgIcon = new ImageIcon(ClassLoader.getSystemResource("Images/background.jpg"));
