@@ -44,8 +44,8 @@ public class AddAdmin extends JFrame {
                 int newUserId = stmt.getInt(4);
                 userIdLabel.setText("User ID: " + newUserId);
                 JOptionPane.showMessageDialog(this, "Admin Created. ID: " + newUserId);
-                new AddEmployee(newUserId); // next screen
-                dispose();
+                new AdminHome().setVisible(true);
+                this.setVisible(false);
             } catch (Exception ex) {
                 ex.printStackTrace();
                 JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());

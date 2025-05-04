@@ -72,7 +72,8 @@ public class AddEmployee extends JFrame {
                 stmt.execute();
 
                 JOptionPane.showMessageDialog(this, "Employee Added Successfully");
-                dispose();
+                new AdminHome().setVisible(true);
+                this.setVisible(false);
             } catch (Exception ex) {
                 ex.printStackTrace();
                 JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
