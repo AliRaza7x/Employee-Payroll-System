@@ -46,7 +46,7 @@ public class AdminHome extends JFrame implements ActionListener {
         deleteEmpBtn = createButton("Delete Employee", "delete.png", 500, 210, btnFont);
         updateEmpBtn = createButton("Update Employee", "employee.png", 500, 260, btnFont);
         generatePayrollBtn = createButton("Generate Payroll", "payslip.png", 500, 310, btnFont);
-        viewAllbtn = createButton("View Employees", "website.png", 500, 310, btnFont);
+        viewAllbtn = createButton("View All Employees", "website.png", 500, 360, btnFont);
 
         // Add to background
         background.add(addEmpBtn);
