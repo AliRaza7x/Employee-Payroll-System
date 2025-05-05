@@ -82,7 +82,7 @@ public class AdminHome extends JFrame implements ActionListener {
         } else if (e.getSource() == addAdminBtn) {
              new AddAdmin().setVisible(true);
         } else if (e.getSource() == searchEmpBtn) {
-            // new SearchEmployee().setVisible(true);
+             new SearchEmployee().setVisible(true);
         } else if (e.getSource() == deleteEmpBtn) {
             // new DeleteEmployee().setVisible(true);
         } else if (e.getSource() == updateEmpBtn) {
