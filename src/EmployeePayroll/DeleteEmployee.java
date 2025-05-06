@@ -15,7 +15,7 @@ public class DeleteEmployee extends JFrame {
 
     public DeleteEmployee() {
         setTitle("Delete Employee By ID");
-        setSize(750, 400); // Wider to fit table
+        setSize(750, 400);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         initComponents();
@@ -28,7 +28,6 @@ public class DeleteEmployee extends JFrame {
         JButton deleteButton = new JButton("Delete");
         JButton backButton = new JButton("Back");
 
-        // Table setup
         String[] columns = {
                 "Employee ID", "Username", "Name", "Phone", "Gender", "Address",
                 "Type", "Department", "Hire Date"
@@ -63,7 +62,7 @@ public class DeleteEmployee extends JFrame {
 
         backButton.addActionListener(e -> {
             dispose();
-            new AdminHome().setVisible(true); // Replace with your actual main menu class
+            new AdminHome().setVisible(true);
         });
     }
 
@@ -77,7 +76,7 @@ public class DeleteEmployee extends JFrame {
             stmt.setInt(1, empId);
             ResultSet rs = stmt.executeQuery();
 
-            tableModel.setRowCount(0); // Clear previous results
+            tableModel.setRowCount(0);
 
             if (rs.next()) {
                 Object[] row = {

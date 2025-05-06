@@ -15,7 +15,7 @@ public class SearchEmployee extends JFrame {
 
     public SearchEmployee() {
         setTitle("Search Employee By ID");
-        setSize(700, 400); // Wider to accommodate table
+        setSize(700, 400);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         initComponents();
@@ -27,7 +27,7 @@ public class SearchEmployee extends JFrame {
         JButton searchButton = new JButton("Search");
         JButton backButton = new JButton("Back");
 
-        // Table and model setup
+
         String[] columns = {
                 "Employee ID", "Username", "Name", "Phone", "Gender", "Address",
                 "Type", "Department", "Hire Date"
@@ -36,7 +36,6 @@ public class SearchEmployee extends JFrame {
         employeeTable = new JTable(tableModel);
         JScrollPane scrollPane = new JScrollPane(employeeTable);
 
-        // Input panel
         JPanel inputPanel = new JPanel();
         inputPanel.add(empIdLabel);
         inputPanel.add(empIdField);
@@ -46,7 +45,6 @@ public class SearchEmployee extends JFrame {
         add(inputPanel, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
 
-        // Search button logic
         searchButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -60,12 +58,11 @@ public class SearchEmployee extends JFrame {
             }
         });
 
-        // Back button logic
         backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 dispose();
-                new AdminHome().setVisible(true); // Replace with your actual main menu class
+                new AdminHome().setVisible(true);
             }
         });
     }
@@ -79,7 +76,6 @@ public class SearchEmployee extends JFrame {
             stmt.setInt(1, empId);
             ResultSet rs = stmt.executeQuery();
 
-            // Clear previous rows
             tableModel.setRowCount(0);
 
             if (rs.next()) {
