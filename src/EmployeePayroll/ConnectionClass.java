@@ -10,7 +10,7 @@ public class ConnectionClass {
     public ConnectionClass() {
         String url = "jdbc:sqlserver://localhost:1433;databaseName=employeeDB;encrypt=true;trustServerCertificate=true";
         String user = "sa";
-        String password = "ksbl1234";
+        String password = "dblab";
 
         try {
             con = DriverManager.getConnection(url, user, password);
@@ -24,7 +24,7 @@ public class ConnectionClass {
     public static Connection getConnection() {
         String url = "jdbc:sqlserver://localhost:1433;databaseName=employeeDB;encrypt=true;trustServerCertificate=true";
         String user = "sa";
-        String password = "ksbl1234";
+        String password = "dblab";
 
         try {
             Connection con = DriverManager.getConnection(url, user, password);

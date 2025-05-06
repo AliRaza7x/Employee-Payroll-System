@@ -89,11 +89,11 @@ public class AdminHome extends JFrame implements ActionListener {
         } else if (e.getSource() == deleteEmpBtn) {
              new DeleteEmployee().setVisible(true);
         } else if (e.getSource() == updateEmpBtn) {
-            // new UpdateEmployee().setVisible(true);
+            new UpdateEmployee().setVisible(true);
         } else if (e.getSource() == generatePayrollBtn) {
             // new GeneratePayroll().setVisible(true);
         } else if (e.getSource() == viewAllbtn) {
-            // new ViewAllEmployees().setVisible(true);
+             new ViewAllEmployees().setVisible(true);
         }
         this.setVisible(false);
     }
