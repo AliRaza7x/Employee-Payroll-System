@@ -8,7 +8,7 @@ public class ConnectionClass {
     public Connection con;
 
     public ConnectionClass() {
-        String url = "jdbc:sqlserver://localhost:1433;databaseName=employeeDB;encrypt=true;trustServerCertificate=true";
+        String url = "jdbc:sqlserver://localhost:1433;databaseName=employeePayrollDB;encrypt=true;trustServerCertificate=true";
         String user = "sa";
         String password = "ksbl1234";
 
@@ -22,7 +22,7 @@ public class ConnectionClass {
     }
 
     public static Connection getConnection() {
-        String url = "jdbc:sqlserver://localhost:1433;databaseName=employeeDB;encrypt=true;trustServerCertificate=true";
+        String url = "jdbc:sqlserver://localhost:1433;databaseName=employeePayrollDB;encrypt=true;trustServerCertificate=true";
         String user = "sa";
         String password = "ksbl1234";
 

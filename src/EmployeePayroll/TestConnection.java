@@ -4,7 +4,7 @@ import java.sql.*;
 
 public class TestConnection {
     public static void main(String[] args) {
-        String url = "jdbc:sqlserver://localhost:1433;databaseName=employeeDB;encrypt=true;trustServerCertificate=true";
+        String url = "jdbc:sqlserver://localhost:1433;databaseName=employeePayrollDB;encrypt=true;trustServerCertificate=true";
         String user = "sa";
         String password = "ksbl1234";
 

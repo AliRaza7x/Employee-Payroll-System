@@ -29,8 +29,8 @@ public class SearchEmployee extends JFrame {
 
 
         String[] columns = {
-                "Employee ID", "Username", "Name", "Phone", "Gender", "Address",
-                "Type", "Department", "Hire Date"
+                "Employee ID", "Username", "Name", "Phone", "Email", "Gender", "Address",
+                "CNIC", "Type", "Department", "Grade", "Hire Date"
         };
         tableModel = new DefaultTableModel(columns, 0);
         employeeTable = new JTable(tableModel);
@@ -84,10 +84,13 @@ public class SearchEmployee extends JFrame {
                         rs.getString("username"),
                         rs.getString("name"),
                         rs.getString("phone"),
+                        rs.getString("email"),
                         rs.getString("gender"),
                         rs.getString("address"),
-                        rs.getString("type_name"),
+                        rs.getString("cnic_num"),
+                        rs.getString("employee_type"),
                         rs.getString("department_name"),
+                        rs.getString("grade"),
                         rs.getDate("hire_date")
                 };
                 tableModel.addRow(rowData);
