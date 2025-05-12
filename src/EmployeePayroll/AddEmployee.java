@@ -37,7 +37,7 @@ public class AddEmployee extends JFrame {
         genderGroup.add(femaleButton);
         genderGroup.add(otherButton);
 
-        employeeTypeComboBox = new JComboBox<>(new String[] { "1", "2" }); // 1: Full-time, 2: Contract
+        employeeTypeComboBox = new JComboBox<>(new String[] { "1", "2" });
         departmentComboBox = new JComboBox<>(new String[] { "1", "2", "3", "4", "5"});
         gradeComboBox = new JComboBox<>(new String[] { "1", "2", "3", "4", "5", "6", "7", "8" });
 
