@@ -7,15 +7,18 @@ import java.awt.event.*;
 public class UserHome extends JFrame implements ActionListener {
     JButton checkInBtn, checkOutBtn, viewLeavesBtn, requestLeaveBtn, generateSlipBtn, exitBtn;
     JLabel background;
+    private int userId; // ✅ Store the userId
 
-    public UserHome() {
+    // ✅ Constructor that accepts userId
+    public UserHome(int userId) {
+        this.userId = userId; // Store for later use (e.g., pass to CheckIn)
+
         setTitle("User Homepage");
         setSize(800, 500);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(null);
 
-        // Load and scale background image
         ImageIcon bgIcon = new ImageIcon(ClassLoader.getSystemResource("Images/background.jpg"));
         Image scaledBG = bgIcon.getImage().getScaledInstance(800, 500, Image.SCALE_SMOOTH);
         background = new JLabel(new ImageIcon(scaledBG));
@@ -23,7 +26,6 @@ public class UserHome extends JFrame implements ActionListener {
         background.setLayout(null);
         add(background);
 
-        // Exit button (top-left)
         ImageIcon rawExitIcon = new ImageIcon(ClassLoader.getSystemResource("Images/switch.png"));
         Image exitImg = rawExitIcon.getImage().getScaledInstance(24, 24, Image.SCALE_SMOOTH);
         ImageIcon exitIcon = new ImageIcon(exitImg);
@@ -35,24 +37,19 @@ public class UserHome extends JFrame implements ActionListener {
         exitBtn.addActionListener(e -> System.exit(0));
         background.add(exitBtn);
 
-        // Font for buttons
         Font btnFont = new Font("Arial", Font.BOLD, 14);
-
-        // User buttons
         checkInBtn = createButton("Check-In", "attendance.png", 500, 60, btnFont);
         checkOutBtn = createButton("Check-Out", "logout.png", 500, 110, btnFont);
         viewLeavesBtn = createButton("View Leaves/Absences", "eye.png", 500, 160, btnFont);
         requestLeaveBtn = createButton("Request Leave", "leave.png", 500, 210, btnFont);
         generateSlipBtn = createButton("Generate Payroll Slip", "payslip.png", 500, 260, btnFont);
 
-        // Add to background
         background.add(checkInBtn);
         background.add(checkOutBtn);
         background.add(viewLeavesBtn);
         background.add(requestLeaveBtn);
         background.add(generateSlipBtn);
 
-        // Action listeners
         checkInBtn.addActionListener(this);
         checkOutBtn.addActionListener(this);
         viewLeavesBtn.addActionListener(this);
@@ -73,9 +70,9 @@ public class UserHome extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == checkInBtn) {
-            // new CheckIn().setVisible(true);
+            new CheckIn(userId).setVisible(true);
         } else if (e.getSource() == checkOutBtn) {
-            // new CheckOut().setVisible(true);
+             new CheckOut(userId).setVisible(true);
         } else if (e.getSource() == viewLeavesBtn) {
             // new ViewLeaves().setVisible(true);
         } else if (e.getSource() == requestLeaveBtn) {
@@ -85,8 +82,4 @@ public class UserHome extends JFrame implements ActionListener {
         }
         this.setVisible(false);
     }
-
-//    public static void main(String[] args) {
-//        new UserHome().setVisible(true);
-//    }
 }

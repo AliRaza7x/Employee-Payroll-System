@@ -74,25 +74,26 @@ public class Login extends JFrame implements ActionListener {
         if (e.getSource() == bt1) {
             try {
                 ConnectionClass obj = new ConnectionClass();
-                System.out.println("obj.con = " + obj.con);
-                String query = "SELECT role FROM users WHERE username = ? AND password = ?";
+                String query = "SELECT user_id, role FROM users WHERE username = ? AND password = ?";
                 PreparedStatement pst = obj.con.prepareStatement(query);
                 pst.setString(1, username);
                 pst.setString(2, password);
                 ResultSet rs = pst.executeQuery();
 
                 if (rs.next()) {
+                    int userId = rs.getInt("user_id");
                     String role = rs.getString("role");
 
                     if ("admin".equalsIgnoreCase(role)) {
                         new AdminHome().setVisible(true);
                     } else if ("user".equalsIgnoreCase(role)) {
-                        new UserHome().setVisible(true);
+                        new UserHome(userId).setVisible(true); // ✅ pass userId
                     }
                     this.setVisible(false);
                 } else {
                     JOptionPane.showMessageDialog(null, "Invalid username or password.");
                 }
+
             } catch (Exception ex) {
                 ex.printStackTrace();
                 JOptionPane.showMessageDialog(null, "Connection failed. Please try again.");
