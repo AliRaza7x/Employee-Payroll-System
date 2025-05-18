@@ -76,7 +76,7 @@ public class UserHome extends JFrame implements ActionListener {
         } else if (e.getSource() == viewLeavesBtn) {
             // new ViewLeaves().setVisible(true);
         } else if (e.getSource() == requestLeaveBtn) {
-            // new RequestLeave().setVisible(true);
+             new RequestLeave(userId).setVisible(true);
         } else if (e.getSource() == generateSlipBtn) {
             // new GenerateOwnSlip().setVisible(true);
         }
