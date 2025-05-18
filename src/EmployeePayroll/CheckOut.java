@@ -31,7 +31,7 @@ public class CheckOut extends JFrame {
         // Buttons: Check-Out + Back
         JButton checkoutButton = new JButton("Check Out");
         checkoutButton.setFont(new Font("Arial", Font.BOLD, 16));
-        checkoutButton.setBackground(new Color(0, 102, 204));
+        checkoutButton.setBackground(Color.RED);
         checkoutButton.setForeground(Color.WHITE);
         checkoutButton.setPreferredSize(new Dimension(120, 40));
 
@@ -76,7 +76,7 @@ public class CheckOut extends JFrame {
         }
     }
 
-    public static void main(String[] args) {
-        new CheckOut(3); // Example user ID
-    }
+//    public static void main(String[] args) {
+//        new CheckOut(3); // Example user ID
+//    }
 }

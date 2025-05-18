@@ -33,7 +33,7 @@ public class CheckIn extends JFrame {
         // --- Buttons ---
         JButton checkinButton = new JButton("Check In");
         checkinButton.setFont(new Font("Arial", Font.BOLD, 16));
-        checkinButton.setBackground(new Color(0, 153, 76));
+        checkinButton.setBackground(Color.GREEN);
         checkinButton.setForeground(Color.WHITE);
         checkinButton.setFocusPainted(false);
         checkinButton.setPreferredSize(new Dimension(120, 40));
@@ -80,8 +80,8 @@ public class CheckIn extends JFrame {
         }
     }
 
-    public static void main(String[] args) {
-        int employee_id = 3;
-        new CheckIn(employee_id);
-    }
+//    public static void main(String[] args) {
+//        int employee_id = 3;
+//        new CheckIn(employee_id);
+//    }
 }
