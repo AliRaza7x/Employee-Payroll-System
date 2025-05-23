@@ -85,9 +85,11 @@ public class Login extends JFrame implements ActionListener {
                     String role = rs.getString("role");
 
                     if ("admin".equalsIgnoreCase(role)) {
-                        new AdminHome().setVisible(true);
+                        new NormalAdminHome().setVisible(true);
                     } else if ("user".equalsIgnoreCase(role)) {
                         new UserHome(userId).setVisible(true); // ✅ pass userId
+                    } else if ("superadmin".equalsIgnoreCase(role)) {
+                        new AdminHome().setVisible(true);
                     }
                     this.setVisible(false);
                 } else {
