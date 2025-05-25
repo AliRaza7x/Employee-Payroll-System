@@ -7,7 +7,7 @@ import java.time.LocalDate;
 
 public class RequestLeave extends JFrame {
     private JComboBox<String> leaveTypeCombo;
-    private JTextField dateField;
+    private JTextField startDateField, endDateField;
     private JTextArea reasonField;
     private JButton submitBtn, backBtn;
     private int userId;
@@ -15,11 +15,10 @@ public class RequestLeave extends JFrame {
     public RequestLeave(int userId) {
         this.userId = userId;
         setTitle("Request Leave");
-        setSize(500, 350);
+        setSize(500, 400);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        // Use a panel with GridBagLayout
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         GridBagConstraints gbc = new GridBagConstraints();
@@ -44,15 +43,21 @@ public class RequestLeave extends JFrame {
         reasonField.setWrapStyleWord(true);
         JScrollPane scrollPane = new JScrollPane(reasonField);
         gbc.gridx = 1;
-        panel.add(reasonField, gbc);
+        panel.add(scrollPane, gbc);
 
-        // Date
+        // Start Date
         gbc.gridx = 0; gbc.gridy = 2;
-        panel.add(new JLabel("Date:"), gbc);
-        dateField = new JTextField(today.toString());
-        dateField.setEditable(false);
+        panel.add(new JLabel("Start Date:"), gbc);
+        startDateField = new JTextField(today.toString());
         gbc.gridx = 1;
-        panel.add(dateField, gbc);
+        panel.add(startDateField, gbc);
+
+        // End Date
+        gbc.gridx = 0; gbc.gridy = 3;
+        panel.add(new JLabel("End Date:"), gbc);
+        endDateField = new JTextField(today.toString());
+        gbc.gridx = 1;
+        panel.add(endDateField, gbc);
 
         // Buttons
         submitBtn = new JButton("Submit");
@@ -62,7 +67,7 @@ public class RequestLeave extends JFrame {
         btnPanel.add(submitBtn);
         btnPanel.add(backBtn);
 
-        gbc.gridx = 0; gbc.gridy = 3; gbc.gridwidth = 2;
+        gbc.gridx = 0; gbc.gridy = 4; gbc.gridwidth = 2;
         panel.add(btnPanel, gbc);
 
         add(panel);
@@ -91,7 +96,16 @@ public class RequestLeave extends JFrame {
     private void submitLeave() {
         String reason = reasonField.getText().trim();
         String selectedType = (String) leaveTypeCombo.getSelectedItem();
-        LocalDate today = LocalDate.now();
+
+        LocalDate startDate, endDate;
+
+        try {
+            startDate = LocalDate.parse(startDateField.getText().trim());
+            endDate = LocalDate.parse(endDateField.getText().trim());
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Please enter valid start and end dates (yyyy-mm-dd).");
+            return;
+        }
 
         if (reason.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Reason cannot be empty.");
@@ -99,6 +113,7 @@ public class RequestLeave extends JFrame {
         }
 
         try (Connection con = ConnectionClass.getConnection()) {
+            // Get employee_id
             PreparedStatement empStmt = con.prepareStatement("SELECT employee_id FROM Employees WHERE user_id = ?");
             empStmt.setInt(1, userId);
             ResultSet empRs = empStmt.executeQuery();
@@ -110,6 +125,7 @@ public class RequestLeave extends JFrame {
                 return;
             }
 
+            // Get leave_type_id
             PreparedStatement typeStmt = con.prepareStatement("SELECT leave_type_id FROM LeaveTypes WHERE type_name = ?");
             typeStmt.setString(1, selectedType);
             ResultSet rs = typeStmt.executeQuery();
@@ -118,11 +134,13 @@ public class RequestLeave extends JFrame {
                 typeId = rs.getInt("leave_type_id");
             }
 
-            CallableStatement cs = con.prepareCall("{call InsertLeave (?, ?, ?, ?)}");
+            // Call stored procedure
+            CallableStatement cs = con.prepareCall("{call InsertLeave (?, ?, ?, ?, ?)}");
             cs.setInt(1, employeeId);
-            cs.setDate(2, Date.valueOf(today));
-            cs.setString(3, reason);
-            cs.setInt(4, typeId);
+            cs.setDate(2, Date.valueOf(startDate));
+            cs.setDate(3, Date.valueOf(endDate));
+            cs.setString(4, reason);
+            cs.setInt(5, typeId);
 
             cs.execute();
             JOptionPane.showMessageDialog(this, "Leave request submitted successfully!");
