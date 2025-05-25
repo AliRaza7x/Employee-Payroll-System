@@ -1,0 +1,63 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "JDBCTest",
+            "request": "launch",
+            "mainClass": "EmployeePayroll.JDBCTest",
+            "projectName": "Employee-Payroll-System_b00f24d"
+        },
+        {
+            "type": "java",
+            "name": "Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        },
+        {
+            "type": "java",
+            "name": "AddEmployee",
+            "request": "launch",
+            "mainClass": "EmployeePayroll.AddEmployee",
+            "projectName": "Employee-Payroll-System_b00f24d"
+        },
+        {
+            "type": "java",
+            "name": "TestConnection",
+            "request": "launch",
+            "mainClass": "EmployeePayroll.TestConnection",
+            "projectName": "Employee-Payroll-System_b00f24d"
+        },
+        {
+            "type": "java",
+            "name": "UpdateEmployee",
+            "request": "launch",
+            "mainClass": "EmployeePayroll.UpdateEmployee",
+            "projectName": "Employee-Payroll-System_b00f24d"
+        },
+        {
+            "type": "java",
+            "name": "ViewAllAbsences",
+            "request": "launch",
+            "mainClass": "EmployeePayroll.ViewAllAbsences",
+            "projectName": "Employee-Payroll-System_b00f24d"
+        },
+        {
+            "type": "java",
+            "name": "ViewAllEmployees",
+            "request": "launch",
+            "mainClass": "EmployeePayroll.ViewAllEmployees",
+            "projectName": "Employee-Payroll-System_b00f24d"
+        },
+        {
+            "type": "java",
+            "name": "WelcomePage",
+            "request": "launch",
+            "mainClass": "EmployeePayroll.WelcomePage",
+            "projectName": "Employee-Payroll-System_b00f24d"
+        }
+    ]
+}
