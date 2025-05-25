@@ -64,7 +64,7 @@ public class UserHome extends JFrame implements ActionListener {
         generateSlipBtn.addActionListener(this);
         viewDetailsBtn.addActionListener(this);
 
-        // Info Panel (instead of JLabel with HTML)
+        // Info Panel
         infoPanel = new JPanel(new GridLayout(4, 2, 10, 10));
         infoPanel.setOpaque(false);
         infoPanel.setBounds(50, 60, 400, 140);
@@ -73,17 +73,13 @@ public class UserHome extends JFrame implements ActionListener {
         displayEmployeeDetails(userId);
     }
 
-    private JButton createButton(String text, String iconFile, int x, int y, Font font) {
-        ImageIcon rawIcon = new ImageIcon(ClassLoader.getSystemResource("Images/" + iconFile));
+    public JButton createButton(String text, String iconName, int x, int y, Font font) {
+        ImageIcon rawIcon = new ImageIcon(ClassLoader.getSystemResource("Images/" + iconName));
         Image scaledIcon = rawIcon.getImage().getScaledInstance(25, 25, Image.SCALE_SMOOTH);
         JButton button = new JButton(text, new ImageIcon(scaledIcon));
         button.setBounds(x, y, 230, 40);
         button.setFont(font);
         button.setHorizontalAlignment(SwingConstants.LEFT);
-        button.setBackground(new Color(33, 150, 243));
-        button.setForeground(Color.WHITE);
-        button.setFocusPainted(false);
-        button.setBorder(BorderFactory.createLineBorder(Color.WHITE, 1));
         return button;
     }
 

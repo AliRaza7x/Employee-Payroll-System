@@ -34,8 +34,8 @@ public class EmployeeDetailsWindow extends JFrame {
         bottomPanel.setBackground(new Color(240, 240, 240));
         backButton = new JButton("← Back to Home");
         backButton.setFont(new Font("Arial", Font.BOLD, 14));
-        backButton.setBackground(new Color(33, 150, 243));
-        backButton.setForeground(Color.WHITE);
+        backButton.setBackground(Color.WHITE);
+        backButton.setForeground(Color.DARK_GRAY);
         backButton.setFocusPainted(false);
         bottomPanel.add(backButton);
         add(bottomPanel, BorderLayout.SOUTH);
