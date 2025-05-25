@@ -20,7 +20,7 @@ public class ViewAllEmployees extends JFrame {
 
     public ViewAllEmployees() {
         setTitle("View All Employees");
-        setSize(1000, 600);
+        setSize(1100, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         initMaps();
@@ -64,11 +64,16 @@ public class ViewAllEmployees extends JFrame {
 
     private void initComponents() {
         String[] columns = {
-                "Employee ID", "Username", "Name", "Phone", "Email", "Gender", "Address",
+                "Employee ID", "Username", "Password", "Name", "Phone", "Email", "Gender", "Address",
                 "CNIC", "Type", "Department", "Grade", "Hire Date"
         };
 
-        tableModel = new DefaultTableModel(columns, 0);
+        tableModel = new DefaultTableModel(columns, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Make all cells non-editable
+            }
+        };
         employeeTable = new JTable(tableModel);
         JScrollPane scrollPane = new JScrollPane(employeeTable);
 
@@ -130,34 +135,36 @@ public class ViewAllEmployees extends JFrame {
         String selectedGrade = (String) gradeCombo.getSelectedItem();
         String selectedType = (String) typeCombo.getSelectedItem();
 
-        try (Connection conn = ConnectionClass.getConnection()) {
-            String sql = "SELECT e.employee_id, u.username, e.name, e.phone, e.email, " +
-                    "e.gender, e.address, e.cnic_num, et.type_name AS employee_type, " +
-                    "d.department_name, g.grade, e.hire_date " +
-                    "FROM Employees e " +
-                    "INNER JOIN Users u ON e.user_id = u.user_id " +
-                    "INNER JOIN EmployeeType et ON e.employee_type_id = et.employee_type_id " +
-                    "INNER JOIN Departments d ON e.department_id = d.department_id " +
-                    "INNER JOIN Grades g ON e.grade_id = g.grade_id " +
-                    "WHERE 1=1 ";
+        try (Connection conn = ConnectionClass.getConnection();
+                CallableStatement stmt = conn.prepareCall("{call ViewFilteredEmployees(?, ?, ?)}")) {
 
-            if (!selectedDepartment.equals("All Departments")) {
-                sql += "AND e.department_id = " + departmentMap.get(selectedDepartment) + " ";
-            }
-            if (!selectedGrade.equals("All Grades")) {
-                sql += "AND e.grade_id = " + gradeMap.get(selectedGrade) + " ";
-            }
-            if (!selectedType.equals("All Types")) {
-                sql += "AND e.employee_type_id = " + typeMap.get(selectedType) + " ";
+            // Set department parameter
+            if (selectedDepartment.equals("All Departments")) {
+                stmt.setNull(1, Types.INTEGER);
+            } else {
+                stmt.setInt(1, departmentMap.get(selectedDepartment));
             }
 
-            try (Statement stmt = conn.createStatement();
-                    ResultSet rs = stmt.executeQuery(sql)) {
+            // Set grade parameter
+            if (selectedGrade.equals("All Grades")) {
+                stmt.setNull(2, Types.INTEGER);
+            } else {
+                stmt.setInt(2, gradeMap.get(selectedGrade));
+            }
 
+            // Set type parameter
+            if (selectedType.equals("All Types")) {
+                stmt.setNull(3, Types.INTEGER);
+            } else {
+                stmt.setInt(3, typeMap.get(selectedType));
+            }
+
+            try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     Object[] rowData = {
                             rs.getInt("employee_id"),
                             rs.getString("username"),
+                            rs.getString("password"),
                             rs.getString("name"),
                             rs.getString("phone"),
                             rs.getString("email"),
