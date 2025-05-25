@@ -5,7 +5,7 @@ import java.awt.*;
 import java.awt.event.*;
 
 public class AdminHome extends JFrame implements ActionListener {
-    JButton addEmpBtn, addAdminBtn, searchEmpBtn, deleteEmpBtn, updateEmpBtn, generatePayrollBtn, exitBtn, viewAllbtn;
+    JButton addEmpBtn, addAdminBtn, searchEmpBtn, deleteEmpBtn, updateEmpBtn, generatePayrollBtn, exitBtn, viewAllbtn, leavebtn;
     JLabel background;
 
 
@@ -47,6 +47,7 @@ public class AdminHome extends JFrame implements ActionListener {
         updateEmpBtn = createButton("Update Employee", "employee.png", 500, 260, btnFont);
         generatePayrollBtn = createButton("Generate Payroll", "payslip.png", 500, 310, btnFont);
         viewAllbtn = createButton("View All Employees", "website.png", 500, 360, btnFont);
+        leavebtn = createButton("Approve/Reject Leaves", "approved.png", 500, 410, btnFont);
 
         // Add to background
         background.add(addEmpBtn);
@@ -56,6 +57,7 @@ public class AdminHome extends JFrame implements ActionListener {
         background.add(updateEmpBtn);
         background.add(generatePayrollBtn);
         background.add(viewAllbtn);
+        background.add(leavebtn);
 
         // Listeners
         addEmpBtn.addActionListener(this);
@@ -65,6 +67,7 @@ public class AdminHome extends JFrame implements ActionListener {
         updateEmpBtn.addActionListener(this);
         generatePayrollBtn.addActionListener(this);
         viewAllbtn.addActionListener(this);
+        leavebtn.addActionListener(this);
     }
 
     // Helper method to create icon + text buttons
@@ -94,6 +97,8 @@ public class AdminHome extends JFrame implements ActionListener {
             // new GeneratePayroll().setVisible(true);
         } else if (e.getSource() == viewAllbtn) {
              new ViewAllEmployees().setVisible(true);
+        } else if (e.getSource() == leavebtn) {
+            new ApproveRejectLeaves(this).setVisible(true);
         }
         this.setVisible(false);
     }
