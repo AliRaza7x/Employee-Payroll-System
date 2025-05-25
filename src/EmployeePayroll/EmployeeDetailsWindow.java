@@ -7,7 +7,7 @@ import java.sql.*;
 
 public class EmployeeDetailsWindow extends JFrame {
     private int userId;
-    private JTextPane textPane;
+    private JPanel detailsPanel;
     private JButton backButton;
 
     public EmployeeDetailsWindow(int userId) {
@@ -16,34 +16,35 @@ public class EmployeeDetailsWindow extends JFrame {
         setTitle("Employee Details");
         setSize(600, 500);
         setLocationRelativeTo(null);
-        setLayout(new BorderLayout());
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setLayout(new BorderLayout());
 
-        // Center Panel with text
-        textPane = new JTextPane();
-        textPane.setContentType("text/html");
-        textPane.setEditable(false);
-        textPane.setBackground(Color.WHITE);
-        textPane.setForeground(Color.BLACK);
+        // Center panel for employee details
+        detailsPanel = new JPanel();
+        detailsPanel.setLayout(new GridLayout(0, 2, 10, 10));
+        detailsPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
+        detailsPanel.setBackground(Color.WHITE);
 
-        JScrollPane scrollPane = new JScrollPane(textPane);
-        scrollPane.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        JScrollPane scrollPane = new JScrollPane(detailsPanel);
+        scrollPane.setBorder(null);
         add(scrollPane, BorderLayout.CENTER);
 
-        // Bottom Panel with Back button
-        JPanel bottomPanel = new JPanel();
-        backButton = new JButton("Back to Home");
+        // Bottom panel for back button
+        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        bottomPanel.setBackground(new Color(240, 240, 240));
+        backButton = new JButton("← Back to Home");
         backButton.setFont(new Font("Arial", Font.BOLD, 14));
+        backButton.setBackground(new Color(33, 150, 243));
+        backButton.setForeground(Color.WHITE);
+        backButton.setFocusPainted(false);
         bottomPanel.add(backButton);
         add(bottomPanel, BorderLayout.SOUTH);
 
-        // Back button action
         backButton.addActionListener(e -> {
             new UserHome(userId).setVisible(true);
             dispose();
         });
 
-        // Load data
         loadEmployeeDetails();
     }
 
@@ -55,45 +56,47 @@ public class EmployeeDetailsWindow extends JFrame {
             ResultSet rs = cs.executeQuery();
 
             if (rs.next()) {
-                String empId = rs.getString("employee_id");
-                String name = rs.getString("name");
-                String phone = rs.getString("phone");
-                String email = rs.getString("email");
-                String gender = rs.getString("gender");
-                String address = rs.getString("address");
-                String cnic = rs.getString("cnic_num");
-                String empType = rs.getString("employee_type");
-                String dept = rs.getString("department_name");
-                String grade = rs.getString("grade");
-                String hireDate = rs.getString("hire_date");
-
-                String html = "<html><body style='font-family: Arial; font-size: 14px; color: black;'>"
-                        + "<h2>Employee Details</h2>"
-                        + "<table cellpadding='8'>"
-                        + "<tr><td><b>Employee ID:</b></td><td>" + empId + "</td></tr>"
-                        + "<tr><td><b>Name:</b></td><td>" + name + "</td></tr>"
-                        + "<tr><td><b>Phone:</b></td><td>" + phone + "</td></tr>"
-                        + "<tr><td><b>Email:</b></td><td>" + email + "</td></tr>"
-                        + "<tr><td><b>Gender:</b></td><td>" + gender + "</td></tr>"
-                        + "<tr><td><b>Address:</b></td><td>" + address + "</td></tr>"
-                        + "<tr><td><b>CNIC:</b></td><td>" + cnic + "</td></tr>"
-                        + "<tr><td><b>Employee Type:</b></td><td>" + empType + "</td></tr>"
-                        + "<tr><td><b>Department:</b></td><td>" + dept + "</td></tr>"
-                        + "<tr><td><b>Grade:</b></td><td>" + grade + "</td></tr>"
-                        + "<tr><td><b>Hire Date:</b></td><td>" + hireDate + "</td></tr>"
-                        + "</table></body></html>";
-
-                textPane.setText(html);
+                addDetail("Employee ID", rs.getString("employee_id"));
+                addDetail("Name", rs.getString("name"));
+                addDetail("Phone", rs.getString("phone"));
+                addDetail("Email", rs.getString("email"));
+                addDetail("Gender", rs.getString("gender"));
+                addDetail("Address", rs.getString("address"));
+                addDetail("CNIC", rs.getString("cnic_num"));
+                addDetail("Employee Type", rs.getString("employee_type"));
+                addDetail("Department", rs.getString("department_name"));
+                addDetail("Grade", rs.getString("grade"));
+                addDetail("Hire Date", rs.getString("hire_date"));
             } else {
-                textPane.setText("No employee details found.");
+                JLabel notFoundLabel = new JLabel("No employee details found.");
+                notFoundLabel.setFont(new Font("Arial", Font.BOLD, 14));
+                notFoundLabel.setForeground(Color.RED);
+                detailsPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+                detailsPanel.add(notFoundLabel);
             }
 
             rs.close();
             cs.close();
             obj.con.close();
         } catch (Exception ex) {
-            textPane.setText("Error loading details.");
+            JLabel errorLabel = new JLabel("Error loading employee details.");
+            errorLabel.setForeground(Color.RED);
+            errorLabel.setFont(new Font("Arial", Font.BOLD, 14));
+            detailsPanel.add(errorLabel);
             ex.printStackTrace();
         }
+    }
+
+    private void addDetail(String label, String value) {
+        JLabel keyLabel = new JLabel(label + ": ");
+        keyLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        keyLabel.setForeground(Color.DARK_GRAY);
+
+        JLabel valueLabel = new JLabel(value);
+        valueLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+        valueLabel.setForeground(Color.BLACK);
+
+        detailsPanel.add(keyLabel);
+        detailsPanel.add(valueLabel);
     }
 }

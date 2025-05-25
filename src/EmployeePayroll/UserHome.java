@@ -7,8 +7,8 @@ import java.sql.*;
 
 public class UserHome extends JFrame implements ActionListener {
     JButton checkInBtn, checkOutBtn, viewLeavesBtn, requestLeaveBtn, generateSlipBtn, exitBtn, viewDetailsBtn;
-    JLabel background, empDetailsLabel;
     private int userId;
+    private JPanel infoPanel;
 
     public UserHome(int userId) {
         this.userId = userId;
@@ -19,13 +19,15 @@ public class UserHome extends JFrame implements ActionListener {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(null);
 
+        // Background image
         ImageIcon bgIcon = new ImageIcon(ClassLoader.getSystemResource("Images/background.jpg"));
         Image scaledBG = bgIcon.getImage().getScaledInstance(800, 500, Image.SCALE_SMOOTH);
-        background = new JLabel(new ImageIcon(scaledBG));
+        JLabel background = new JLabel(new ImageIcon(scaledBG));
         background.setBounds(0, 0, 800, 500);
         background.setLayout(null);
         add(background);
 
+        // Exit Button
         ImageIcon rawExitIcon = new ImageIcon(ClassLoader.getSystemResource("Images/switch.png"));
         Image exitImg = rawExitIcon.getImage().getScaledInstance(24, 24, Image.SCALE_SMOOTH);
         exitBtn = new JButton(new ImageIcon(exitImg));
@@ -36,36 +38,38 @@ public class UserHome extends JFrame implements ActionListener {
         exitBtn.addActionListener(e -> System.exit(0));
         background.add(exitBtn);
 
+        // Font for buttons
         Font btnFont = new Font("Arial", Font.BOLD, 14);
+
+        // Create and add buttons
         checkInBtn = createButton("Check-In", "attendance.png", 500, 60, btnFont);
         checkOutBtn = createButton("Check-Out", "logout.png", 500, 110, btnFont);
         viewLeavesBtn = createButton("View Leaves/Absences", "eye.png", 500, 160, btnFont);
         requestLeaveBtn = createButton("Request Leave", "leave.png", 500, 210, btnFont);
         generateSlipBtn = createButton("Generate Payroll Slip", "payslip.png", 500, 260, btnFont);
-        viewDetailsBtn = createButton("View Employee Details", "details.png", 500, 310, btnFont); // new button
+        viewDetailsBtn = createButton("View Employee Details", "details.png", 500, 310, btnFont);
 
         background.add(checkInBtn);
         background.add(checkOutBtn);
         background.add(viewLeavesBtn);
         background.add(requestLeaveBtn);
         background.add(generateSlipBtn);
-        background.add(viewDetailsBtn);  // add new button
+        background.add(viewDetailsBtn);
 
+        // Button actions
         checkInBtn.addActionListener(this);
         checkOutBtn.addActionListener(this);
         viewLeavesBtn.addActionListener(this);
         requestLeaveBtn.addActionListener(this);
         generateSlipBtn.addActionListener(this);
-        viewDetailsBtn.addActionListener(this); // listener for new button
+        viewDetailsBtn.addActionListener(this);
 
-        // Add label to display employee details
-        empDetailsLabel = new JLabel();
-        empDetailsLabel.setBounds(50, 60, 400, 200);
-        empDetailsLabel.setForeground(Color.WHITE);
-        empDetailsLabel.setFont(new Font("Arial", Font.PLAIN, 16));
-        background.add(empDetailsLabel);
+        // Info Panel (instead of JLabel with HTML)
+        infoPanel = new JPanel(new GridLayout(4, 2, 10, 10));
+        infoPanel.setOpaque(false);
+        infoPanel.setBounds(50, 60, 400, 140);
+        background.add(infoPanel);
 
-        // Load and show employee data
         displayEmployeeDetails(userId);
     }
 
@@ -76,6 +80,10 @@ public class UserHome extends JFrame implements ActionListener {
         button.setBounds(x, y, 230, 40);
         button.setFont(font);
         button.setHorizontalAlignment(SwingConstants.LEFT);
+        button.setBackground(new Color(33, 150, 243));
+        button.setForeground(Color.WHITE);
+        button.setFocusPainted(false);
+        button.setBorder(BorderFactory.createLineBorder(Color.WHITE, 1));
         return button;
     }
 
@@ -87,30 +95,44 @@ public class UserHome extends JFrame implements ActionListener {
             ResultSet rs = cs.executeQuery();
 
             if (rs.next()) {
-                String empId = rs.getString("employee_id");
-                String name = rs.getString("name");
-                String dept = rs.getString("department_name");
-                String grade = rs.getString("grade");
+                infoPanel.add(createLabel("Employee ID:"));
+                infoPanel.add(createValue(rs.getString("employee_id")));
 
-                String details = "<html><body style='color:white; font-family: Arial; font-size: 14px;'>"
-                        + "<table cellpadding='5' cellspacing='0' border='0'>"
-                        + "<tr><td><b>Employee ID:</b></td><td>" + empId + "</td></tr>"
-                        + "<tr><td><b>Name:</b></td><td>" + name + "</td></tr>"
-                        + "<tr><td><b>Department:</b></td><td>" + dept + "</td></tr>"
-                        + "<tr><td><b>Grade:</b></td><td>" + grade + "</td></tr>"
-                        + "</table></body></html>";
+                infoPanel.add(createLabel("Name:"));
+                infoPanel.add(createValue(rs.getString("name")));
 
-                empDetailsLabel.setText(details);
+                infoPanel.add(createLabel("Department:"));
+                infoPanel.add(createValue(rs.getString("department_name")));
+
+                infoPanel.add(createLabel("Grade:"));
+                infoPanel.add(createValue(rs.getString("grade")));
             } else {
-                empDetailsLabel.setText("Employee details not found.");
+                infoPanel.setLayout(new FlowLayout());
+                infoPanel.add(new JLabel("Employee details not found."));
             }
+
             rs.close();
             cs.close();
             obj.con.close();
         } catch (Exception ex) {
-            empDetailsLabel.setText("Error loading details.");
+            infoPanel.setLayout(new FlowLayout());
+            infoPanel.add(new JLabel("Error loading details."));
             ex.printStackTrace();
         }
+    }
+
+    private JLabel createLabel(String text) {
+        JLabel label = new JLabel(text);
+        label.setFont(new Font("Arial", Font.BOLD, 14));
+        label.setForeground(Color.WHITE);
+        return label;
+    }
+
+    private JLabel createValue(String value) {
+        JLabel label = new JLabel(value);
+        label.setFont(new Font("Arial", Font.PLAIN, 14));
+        label.setForeground(Color.WHITE);
+        return label;
     }
 
     @Override
