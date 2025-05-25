@@ -3,15 +3,15 @@ package EmployeePayroll;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.*;
 
 public class UserHome extends JFrame implements ActionListener {
-    JButton checkInBtn, checkOutBtn, viewLeavesBtn, requestLeaveBtn, generateSlipBtn, exitBtn;
-    JLabel background;
-    private int userId; // ✅ Store the userId
+    JButton checkInBtn, checkOutBtn, viewLeavesBtn, requestLeaveBtn, generateSlipBtn, exitBtn, viewDetailsBtn;
+    JLabel background, empDetailsLabel;
+    private int userId;
 
-    // ✅ Constructor that accepts userId
     public UserHome(int userId) {
-        this.userId = userId; // Store for later use (e.g., pass to CheckIn)
+        this.userId = userId;
 
         setTitle("User Homepage");
         setSize(800, 500);
@@ -28,8 +28,7 @@ public class UserHome extends JFrame implements ActionListener {
 
         ImageIcon rawExitIcon = new ImageIcon(ClassLoader.getSystemResource("Images/switch.png"));
         Image exitImg = rawExitIcon.getImage().getScaledInstance(24, 24, Image.SCALE_SMOOTH);
-        ImageIcon exitIcon = new ImageIcon(exitImg);
-        exitBtn = new JButton(exitIcon);
+        exitBtn = new JButton(new ImageIcon(exitImg));
         exitBtn.setBounds(10, 10, 30, 30);
         exitBtn.setBorderPainted(false);
         exitBtn.setContentAreaFilled(false);
@@ -43,18 +42,31 @@ public class UserHome extends JFrame implements ActionListener {
         viewLeavesBtn = createButton("View Leaves/Absences", "eye.png", 500, 160, btnFont);
         requestLeaveBtn = createButton("Request Leave", "leave.png", 500, 210, btnFont);
         generateSlipBtn = createButton("Generate Payroll Slip", "payslip.png", 500, 260, btnFont);
+        viewDetailsBtn = createButton("View Employee Details", "details.png", 500, 310, btnFont); // new button
 
         background.add(checkInBtn);
         background.add(checkOutBtn);
         background.add(viewLeavesBtn);
         background.add(requestLeaveBtn);
         background.add(generateSlipBtn);
+        background.add(viewDetailsBtn);  // add new button
 
         checkInBtn.addActionListener(this);
         checkOutBtn.addActionListener(this);
         viewLeavesBtn.addActionListener(this);
         requestLeaveBtn.addActionListener(this);
         generateSlipBtn.addActionListener(this);
+        viewDetailsBtn.addActionListener(this); // listener for new button
+
+        // Add label to display employee details
+        empDetailsLabel = new JLabel();
+        empDetailsLabel.setBounds(50, 60, 400, 200);
+        empDetailsLabel.setForeground(Color.WHITE);
+        empDetailsLabel.setFont(new Font("Arial", Font.PLAIN, 16));
+        background.add(empDetailsLabel);
+
+        // Load and show employee data
+        displayEmployeeDetails(userId);
     }
 
     private JButton createButton(String text, String iconFile, int x, int y, Font font) {
@@ -67,18 +79,54 @@ public class UserHome extends JFrame implements ActionListener {
         return button;
     }
 
+    private void displayEmployeeDetails(int userId) {
+        try {
+            ConnectionClass obj = new ConnectionClass();
+            CallableStatement cs = obj.con.prepareCall("{call GetEmployeeDetailsByUserId(?)}");
+            cs.setInt(1, userId);
+            ResultSet rs = cs.executeQuery();
+
+            if (rs.next()) {
+                String empId = rs.getString("employee_id");
+                String name = rs.getString("name");
+                String dept = rs.getString("department_name");
+                String grade = rs.getString("grade");
+
+                String details = "<html><body style='color:white; font-family: Arial; font-size: 14px;'>"
+                        + "<table cellpadding='5' cellspacing='0' border='0'>"
+                        + "<tr><td><b>Employee ID:</b></td><td>" + empId + "</td></tr>"
+                        + "<tr><td><b>Name:</b></td><td>" + name + "</td></tr>"
+                        + "<tr><td><b>Department:</b></td><td>" + dept + "</td></tr>"
+                        + "<tr><td><b>Grade:</b></td><td>" + grade + "</td></tr>"
+                        + "</table></body></html>";
+
+                empDetailsLabel.setText(details);
+            } else {
+                empDetailsLabel.setText("Employee details not found.");
+            }
+            rs.close();
+            cs.close();
+            obj.con.close();
+        } catch (Exception ex) {
+            empDetailsLabel.setText("Error loading details.");
+            ex.printStackTrace();
+        }
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == checkInBtn) {
             new CheckIn(userId).setVisible(true);
         } else if (e.getSource() == checkOutBtn) {
-             new CheckOut(userId).setVisible(true);
+            new CheckOut(userId).setVisible(true);
         } else if (e.getSource() == viewLeavesBtn) {
-             new ViewAllAbsences().setVisible(true);
+            new ViewAllAbsences().setVisible(true);
         } else if (e.getSource() == requestLeaveBtn) {
-             new RequestLeave(userId).setVisible(true);
+            new RequestLeave(userId).setVisible(true);
         } else if (e.getSource() == generateSlipBtn) {
-            // new GenerateOwnSlip().setVisible(true);
+            // new GenerateOwnSlip(userId).setVisible(true);
+        } else if (e.getSource() == viewDetailsBtn) {
+            new EmployeeDetailsWindow(userId).setVisible(true);
         }
         this.setVisible(false);
     }
