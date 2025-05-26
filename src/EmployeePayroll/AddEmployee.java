@@ -2,6 +2,7 @@ package EmployeePayroll;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.security.MessageDigest;
 import java.sql.*;
 import java.util.Random;
 
@@ -10,6 +11,8 @@ public class AddEmployee extends JFrame {
     private JRadioButton maleButton, femaleButton, otherButton;
     private JComboBox<String> employeeTypeComboBox, departmentComboBox, gradeComboBox;
     private JButton addButton, cancelButton;
+    String username, password;
+
 
     private int userId;
 
@@ -101,15 +104,16 @@ public class AddEmployee extends JFrame {
     }
 
     private void generateAndInsertUser() {
-        String username = generateRandomString(8);
-        String password = generateRandomString(10);
+        username = generateRandomString(8);
+        password = generateRandomString(10);
         String role = "user";
+        String hashedPassword = hashPassword(password);
 
         try (Connection conn = ConnectionClass.getConnection();
              PreparedStatement stmt = conn.prepareStatement("INSERT INTO Users (username, password, role) OUTPUT INSERTED.user_id VALUES (?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setString(1, username);
-            stmt.setString(2, password);
+            stmt.setString(2, hashedPassword);
             stmt.setString(3, role);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -173,7 +177,7 @@ public class AddEmployee extends JFrame {
             cs.setString(11, hireDate);
             cs.execute();
 
-            JOptionPane.showMessageDialog(this, "Employee added successfully.");
+            JOptionPane.showMessageDialog(this, "Employee added successfully with username " + username + " and password " + password);
 
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -190,6 +194,23 @@ public class AddEmployee extends JFrame {
             sb.append(chars.charAt(index));
         }
         return sb.toString();
+    }
+
+    public static String hashPassword(String password) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5"); // Use MD5 algorithm
+            byte[] hashedBytes = md.digest(password.getBytes());
+            StringBuilder sb = new StringBuilder();
+
+            for (byte b : hashedBytes) {
+                sb.append(String.format("%02x", b)); // Convert byte to hexadecimal
+            }
+
+            return sb.toString(); // Return the hashed password as a string
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public static void main(String[] args) {

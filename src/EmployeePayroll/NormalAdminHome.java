@@ -98,7 +98,7 @@ public class NormalAdminHome extends JFrame implements ActionListener {
         this.setVisible(false);
     }
 
-//    public static void main(String[] args) {
-//        new AdminHome().setVisible(true);
-//    }
+    public static void main(String[] args) {
+        new NormalAdminHome().setVisible(true);
+    }
 }
