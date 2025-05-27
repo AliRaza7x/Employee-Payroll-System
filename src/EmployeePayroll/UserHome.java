@@ -44,7 +44,7 @@ public class UserHome extends JFrame implements ActionListener {
         // Create and add buttons
         checkInBtn = createButton("Check-In", "attendance.png", 500, 60, btnFont);
         checkOutBtn = createButton("Check-Out", "logout.png", 500, 110, btnFont);
-        viewLeavesBtn = createButton("View Leaves/Absences", "eye.png", 500, 160, btnFont);
+        viewLeavesBtn = createButton("View Leaves", "eye.png", 500, 160, btnFont);
         requestLeaveBtn = createButton("Request Leave", "leave.png", 500, 210, btnFont);
         generateSlipBtn = createButton("Generate Payroll Slip", "payslip.png", 500, 260, btnFont);
         viewDetailsBtn = createButton("View Employee Details", "details.png", 500, 310, btnFont);
@@ -138,7 +138,21 @@ public class UserHome extends JFrame implements ActionListener {
         } else if (e.getSource() == checkOutBtn) {
             new CheckOut(userId).setVisible(true);
         } else if (e.getSource() == viewLeavesBtn) {
-            new ViewAllAbsences().setVisible(true);
+            try (Connection conn = ConnectionClass.getConnection()) {
+                String query = "SELECT employee_id FROM Employees WHERE user_id = ?";
+                try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+                    pstmt.setInt(1, userId);
+                    ResultSet rs = pstmt.executeQuery();
+                    if (rs.next()) {
+                        int employeeId = rs.getInt("employee_id");
+                        new ViewLeaves(employeeId, userId).setVisible(true);
+                        dispose();
+                    }
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Error: " + ex.getMessage());
+            }
         } else if (e.getSource() == requestLeaveBtn) {
             new RequestLeave(userId).setVisible(true);
         } else if (e.getSource() == generateSlipBtn) {

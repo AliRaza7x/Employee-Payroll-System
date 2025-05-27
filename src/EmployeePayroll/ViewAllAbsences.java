@@ -29,7 +29,7 @@ public class ViewAllAbsences extends JFrame {
 
         String url = "jdbc:sqlserver://localhost:1433;databaseName=employeePayrollDB;encrypt=true;trustServerCertificate=true;";
         String username = "sa";
-        String password = "ksbl1234";
+        String password = "dblab";
 
         // New: directly select from the view instead of calling stored procedure
         String query = "SELECT * FROM Absences";

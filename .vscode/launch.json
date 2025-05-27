@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "ViewLeaves",
+            "request": "launch",
+            "mainClass": "EmployeePayroll.ViewLeaves",
+            "projectName": "Employee-Payroll-System_b00f24d"
+        },
+        {
+            "type": "java",
             "name": "JDBCTest",
             "request": "launch",
             "mainClass": "EmployeePayroll.JDBCTest",
