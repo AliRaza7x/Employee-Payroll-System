@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "ViewAbsences",
+            "request": "launch",
+            "mainClass": "EmployeePayroll.ViewAbsences",
+            "projectName": "Employee-Payroll-System_b00f24d"
+        },
+        {
+            "type": "java",
             "name": "JDBCTest",
             "request": "launch",
             "mainClass": "EmployeePayroll.JDBCTest",
