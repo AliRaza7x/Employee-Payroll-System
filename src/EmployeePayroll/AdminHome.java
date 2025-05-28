@@ -43,14 +43,14 @@ public class AdminHome extends JFrame implements ActionListener {
         Font btnFont = new Font("Arial", Font.BOLD, 14);
 
         // Add all buttons
-        addEmpBtn = createButton("Add Employee", "people.png", 500, 60, btnFont);
-        addAdminBtn = createButton("Add Admin", "accepted.png", 500, 110, btnFont);
-        searchEmpBtn = createButton("Search Employee", "recruitment.png", 500, 160, btnFont);
-        deleteEmpBtn = createButton("Delete Employee", "delete.png", 500, 210, btnFont);
-        updateEmpBtn = createButton("Update Employee", "employee.png", 500, 260, btnFont);
-        generatePayrollBtn = createButton("Generate Payroll", "payslip.png", 500, 310, btnFont);
-        viewAllbtn = createButton("View All Employees", "website.png", 500, 360, btnFont);
-        leavebtn = createButton("Approve/Reject Leaves", "approved.png", 500, 410, btnFont);
+        addEmpBtn = createButton("Add Employee", "people.png", 500, 40, btnFont);
+        addAdminBtn = createButton("Add Admin", "accepted.png", 500, 90, btnFont);
+        searchEmpBtn = createButton("Search Employee", "recruitment.png", 500, 140, btnFont);
+        deleteEmpBtn = createButton("Delete Employee", "delete.png", 500, 190, btnFont);
+        updateEmpBtn = createButton("Update Employee", "employee.png", 500, 240, btnFont);
+        generatePayrollBtn = createButton("Generate Payroll", "payslip.png", 500, 290, btnFont);
+        viewAllbtn = createButton("View All Employees", "website.png", 500, 340, btnFont);
+        leavebtn = createButton("Approve/Reject Leaves", "approved.png", 500, 390, btnFont);
 
         // Add to background
         background.add(addEmpBtn);
