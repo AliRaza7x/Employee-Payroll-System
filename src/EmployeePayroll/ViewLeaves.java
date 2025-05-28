@@ -71,33 +71,44 @@ public class ViewLeaves extends JFrame {
                     int totalLeaves = rs.getInt("allowed_leaves");
                     totalLeavesLabel.setText("Total Leaves: " + totalLeaves);
 
-                    // Get used leaves (only approved leaves)
-                    String usedLeavesQuery = "SELECT ISNULL(SUM(DATEDIFF(DAY, lr.leave_start_date, lr.leave_end_date) + 1), 0) AS used_leaves "
-                            +
-                            "FROM LeaveRequest lr " +
-                            "JOIN LeaveStatus ls ON lr.status_id = ls.status_id " +
-                            "WHERE lr.employee_id = ? " +
-                            "AND YEAR(lr.leave_start_date) = ? " +
-                            "AND ls.status = 'Approved'";
+                    // Get used leaves using stored procedure
+                    int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+                    System.out.println("Debug - Current Year: " + currentYear);
+                    System.out.println("Debug - Employee ID: " + employeeId);
 
-                    try (PreparedStatement pstmt = conn.prepareStatement(usedLeavesQuery)) {
-                        pstmt.setInt(1, employeeId);
-                        pstmt.setInt(2, Calendar.getInstance().get(Calendar.YEAR));
-                        ResultSet usedRs = pstmt.executeQuery();
+                    try (CallableStatement usedLeavesStmt = conn.prepareCall("{call GetEmployeeUsedLeaves(?, ?)}")) {
+                        usedLeavesStmt.setInt(1, employeeId);
+                        usedLeavesStmt.setInt(2, currentYear);
+                        ResultSet usedRs = usedLeavesStmt.executeQuery();
                         if (usedRs.next()) {
-                            int usedLeaves = usedRs.getInt(1);
-                            ResultSetMetaData meta = usedRs.getMetaData();
-                            int columnCount = meta.getColumnCount();
-                            for (int i = 1; i <= columnCount; i++) {
-                                System.out.println("Column " + i + ": " + meta.getColumnName(i) + " = " + usedRs.getObject(i));
+                            int usedLeaves = usedRs.getInt("used_leaves");
+                            System.out.println("Debug - Used Leaves: " + usedLeaves);
+
+                            // Debug query to check leave requests
+                            String debugQuery = "SELECT lr.leave_start_date, lr.leave_end_date, ls.status " +
+                                    "FROM LeaveRequest lr " +
+                                    "JOIN LeaveStatus ls ON lr.status_id = ls.status_id " +
+                                    "WHERE lr.employee_id = ? " +
+                                    "AND YEAR(lr.leave_start_date) = ?";
+
+                            try (PreparedStatement debugStmt = conn.prepareStatement(debugQuery)) {
+                                debugStmt.setInt(1, employeeId);
+                                debugStmt.setInt(2, currentYear);
+                                ResultSet debugRs = debugStmt.executeQuery();
+                                System.out.println("Debug - Leave Requests for " + currentYear + ":");
+                                while (debugRs.next()) {
+                                    System.out.println("Start Date: " + debugRs.getDate("leave_start_date") +
+                                            ", End Date: " + debugRs.getDate("leave_end_date") +
+                                            ", Status: " + debugRs.getString("status"));
+                                }
                             }
+
                             int remainingLeaves = totalLeaves - usedLeaves;
                             remainingLeavesLabel.setText("Remaining Leaves: " + remainingLeaves);
                         }
                     }
                 }
             }
-
             // Load leave history
             try (CallableStatement cs = conn.prepareCall("{call GetEmployeeLeaveHistory(?)}")) {
                 cs.setInt(1, employeeId);
@@ -105,6 +116,7 @@ public class ViewLeaves extends JFrame {
 
                 tableModel.setRowCount(0); // Clear existing rows
                 while (rs.next()) {
+
                     Object[] row = {
                             rs.getInt("request_id"),
                             rs.getDate("leave_start_date"),
