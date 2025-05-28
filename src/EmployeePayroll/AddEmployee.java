@@ -1,9 +1,12 @@
 package EmployeePayroll;
+
 import javax.swing.*;
 import java.awt.*;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.*;
 import java.security.MessageDigest;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Random;
 
 public class AddEmployee extends JFrame {
@@ -13,8 +16,12 @@ public class AddEmployee extends JFrame {
     private JButton addButton, cancelButton;
     String username, password;
 
-
     private int userId;
+
+    // Basic ID lists for selected values
+    private ArrayList<Integer> employeeTypeIds = new ArrayList<>();
+    private ArrayList<Integer> departmentIds = new ArrayList<>();
+    private ArrayList<Integer> gradeIds = new ArrayList<>();
 
     public AddEmployee() {
         setTitle("Add Employee");
@@ -40,9 +47,9 @@ public class AddEmployee extends JFrame {
         genderGroup.add(femaleButton);
         genderGroup.add(otherButton);
 
-        employeeTypeComboBox = new JComboBox<>(new String[] { "1", "2" });
-        departmentComboBox = new JComboBox<>(new String[] { "1", "2", "3", "4", "5"});
-        gradeComboBox = new JComboBox<>(new String[] { "1", "2", "3", "4", "5", "6", "7", "8" });
+        employeeTypeComboBox = new JComboBox<>();
+        departmentComboBox = new JComboBox<>();
+        gradeComboBox = new JComboBox<>();
 
         addButton = new JButton("Add Employee");
         cancelButton = new JButton("Go Back");
@@ -79,6 +86,9 @@ public class AddEmployee extends JFrame {
 
         // Generate user credentials and insert into Users table
         generateAndInsertUser();
+
+        // Load combo box data
+        loadComboBoxData();
 
         // Add listeners
         nameField.addFocusListener(new FocusAdapter() {
@@ -133,6 +143,38 @@ public class AddEmployee extends JFrame {
         }
     }
 
+    private void loadComboBoxData() {
+        try (Connection conn = ConnectionClass.getConnection()) {
+
+            PreparedStatement stmt1 = conn.prepareStatement("SELECT employee_type_id, type_name FROM EmployeeType ORDER BY employee_type_id");
+            ResultSet rs1 = stmt1.executeQuery();
+            while (rs1.next()) {
+                employeeTypeIds.add(rs1.getInt("employee_type_id"));
+                employeeTypeComboBox.addItem(rs1.getString("type_name"));
+            }
+
+            // Load Departments
+            PreparedStatement stmt2 = conn.prepareStatement("SELECT department_id, department_name FROM Departments ORDER BY department_id");
+            ResultSet rs2 = stmt2.executeQuery();
+            while (rs2.next()) {
+                departmentIds.add(rs2.getInt("department_id"));
+                departmentComboBox.addItem(rs2.getString("department_name"));
+            }
+
+            // Load Grades
+            PreparedStatement stmt3 = conn.prepareStatement("SELECT grade_id, grade FROM Grades ORDER BY grade_id");
+            ResultSet rs3 = stmt3.executeQuery();
+            while (rs3.next()) {
+                gradeIds.add(rs3.getInt("grade_id"));
+                gradeComboBox.addItem(rs3.getString("grade"));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error loading combo box data from database.");
+        }
+    }
+
     private void addEmployee() {
         String name = nameField.getText();
         String phone = phoneField.getText();
@@ -142,9 +184,9 @@ public class AddEmployee extends JFrame {
         String hireDate = hireDateField.getText();
         String gender = maleButton.isSelected() ? "Male" : femaleButton.isSelected() ? "Female" : otherButton.isSelected() ? "Other" : "";
 
-        int employeeTypeId = Integer.parseInt((String) employeeTypeComboBox.getSelectedItem());
-        int departmentId = Integer.parseInt((String) departmentComboBox.getSelectedItem());
-        int gradeId = Integer.parseInt((String) gradeComboBox.getSelectedItem());
+        int employeeTypeId = employeeTypeIds.get(employeeTypeComboBox.getSelectedIndex());
+        int departmentId = departmentIds.get(departmentComboBox.getSelectedIndex());
+        int gradeId = gradeIds.get(gradeComboBox.getSelectedIndex());
 
         if (gender.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Please select a gender.");
@@ -177,7 +219,26 @@ public class AddEmployee extends JFrame {
             cs.setString(11, hireDate);
             cs.execute();
 
-            JOptionPane.showMessageDialog(this, "Employee added successfully with username " + username + " and password " + password);
+//            JOptionPane.showMessageDialog(this, "Employee added successfully with username " + username + " and password " + password);
+            String message = "Employee added successfully!\n\nUsername: " + username + "\nPassword: " + password;
+
+            Object[] options = {"Copy", "OK"};
+
+            int result = JOptionPane.showOptionDialog(
+                    this,
+                    message,
+                    "Employee Added",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.INFORMATION_MESSAGE,
+                    null,
+                    options,
+                    options[1]
+            );
+
+            if (result == JOptionPane.YES_OPTION) {
+                StringSelection selection = new StringSelection("Username: " + username + "\nPassword: " + password);
+                Toolkit.getDefaultToolkit().getSystemClipboard().setContents(selection,null);
+            }
 
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -190,7 +251,7 @@ public class AddEmployee extends JFrame {
         StringBuilder sb = new StringBuilder();
         Random rnd = new Random();
         while (sb.length() < length) {
-            int index = (int) (rnd.nextFloat() * chars.length());
+            int index = rnd.nextInt(chars.length());
             sb.append(chars.charAt(index));
         }
         return sb.toString();
@@ -198,15 +259,13 @@ public class AddEmployee extends JFrame {
 
     public static String hashPassword(String password) {
         try {
-            MessageDigest md = MessageDigest.getInstance("MD5"); // Use MD5 algorithm
+            MessageDigest md = MessageDigest.getInstance("MD5");
             byte[] hashedBytes = md.digest(password.getBytes());
             StringBuilder sb = new StringBuilder();
-
             for (byte b : hashedBytes) {
-                sb.append(String.format("%02x", b)); // Convert byte to hexadecimal
+                sb.append(String.format("%02x", b));
             }
-
-            return sb.toString(); // Return the hashed password as a string
+            return sb.toString();
         } catch (Exception e) {
             e.printStackTrace();
             return null;
