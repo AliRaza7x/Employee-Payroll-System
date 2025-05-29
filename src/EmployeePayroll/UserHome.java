@@ -6,7 +6,8 @@ import java.awt.event.*;
 import java.sql.*;
 
 public class UserHome extends JFrame implements ActionListener {
-    JButton checkInBtn, checkOutBtn, viewLeavesBtn, requestLeaveBtn, generateSlipBtn, exitBtn, viewDetailsBtn;
+    JButton checkInBtn, checkOutBtn, viewLeavesBtn, requestLeaveBtn, generateSlipBtn, exitBtn, viewDetailsBtn,
+            viewAbsencesBtn;
     private int userId;
     private JPanel infoPanel;
 
@@ -44,13 +45,15 @@ public class UserHome extends JFrame implements ActionListener {
         // Create and add buttons
         checkInBtn = createButton("Check-In", "attendance.png", 500, 60, btnFont);
         checkOutBtn = createButton("Check-Out", "logout.png", 500, 110, btnFont);
-        viewLeavesBtn = createButton("View Leaves/Absences", "eye.png", 500, 160, btnFont);
-        requestLeaveBtn = createButton("Request Leave", "leave.png", 500, 210, btnFont);
-        generateSlipBtn = createButton("Generate Payroll Slip", "payslip.png", 500, 260, btnFont);
-        viewDetailsBtn = createButton("View Employee Details", "details.png", 500, 310, btnFont);
+        viewAbsencesBtn = createButton("View Absences", "eye.png", 500, 160, btnFont);
+        viewLeavesBtn = createButton("View Leaves", "eye.png", 500, 210, btnFont);
+        requestLeaveBtn = createButton("Request Leave", "leave.png", 500, 260, btnFont);
+        generateSlipBtn = createButton("Generate Payroll Slip", "payslip.png", 500, 310, btnFont);
+        viewDetailsBtn = createButton("View Employee Details", "details.png", 500, 360, btnFont);
 
         background.add(checkInBtn);
         background.add(checkOutBtn);
+        background.add(viewAbsencesBtn);
         background.add(viewLeavesBtn);
         background.add(requestLeaveBtn);
         background.add(generateSlipBtn);
@@ -59,6 +62,7 @@ public class UserHome extends JFrame implements ActionListener {
         // Button actions
         checkInBtn.addActionListener(this);
         checkOutBtn.addActionListener(this);
+        viewAbsencesBtn.addActionListener(this);
         viewLeavesBtn.addActionListener(this);
         requestLeaveBtn.addActionListener(this);
         generateSlipBtn.addActionListener(this);
@@ -137,9 +141,27 @@ public class UserHome extends JFrame implements ActionListener {
             new CheckIn(userId).setVisible(true);
         } else if (e.getSource() == checkOutBtn) {
             new CheckOut(userId).setVisible(true);
-        } else if (e.getSource() == viewLeavesBtn) {
-            new ViewAllAbsences().setVisible(true);
-        } else if (e.getSource() == requestLeaveBtn) {
+        } else if (e.getSource() == viewAbsencesBtn) {
+            new ViewAbsences(userId).setVisible(true);
+        }
+        //  else if (e.getSource() == viewLeavesBtn) {
+        //     try (Connection conn = ConnectionClass.getConnection()) {
+        //         String query = "SELECT employee_id FROM Employees WHERE user_id = ?";
+        //         try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+        //             pstmt.setInt(1, userId);
+        //             ResultSet rs = pstmt.executeQuery();
+        //             if (rs.next()) {
+        //                 int employeeId = rs.getInt("employee_id");
+        //                 new ViewLeaves(employeeId, userId).setVisible(true);
+        //                 dispose();
+        //             }
+        //         }
+        //     } catch (SQLException ex) {
+        //         ex.printStackTrace();
+        //         JOptionPane.showMessageDialog(null, "Error: " + ex.getMessage());
+        //     }
+        // }
+         else if (e.getSource() == requestLeaveBtn) {
             new RequestLeave(userId).setVisible(true);
         } else if (e.getSource() == generateSlipBtn) {
             // new GenerateOwnSlip(userId).setVisible(true);
