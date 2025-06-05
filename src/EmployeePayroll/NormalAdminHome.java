@@ -93,7 +93,7 @@ public class NormalAdminHome extends JFrame implements ActionListener {
         } else if (e.getSource() == updateEmpBtn) {
             new UpdateEmployee().setVisible(true);
         } else if (e.getSource() == generatePayrollBtn) {
-            // new GeneratePayroll().setVisible(true);
+             new AdminPayroll().setVisible(true);
         } else if (e.getSource() == viewAllbtn) {
             new ViewAllEmployees().setVisible(true);
         } else if (e.getSource() == leavesbtn) {
