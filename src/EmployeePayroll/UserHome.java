@@ -143,8 +143,7 @@ public class UserHome extends JFrame implements ActionListener {
             new CheckOut(userId).setVisible(true);
         } else if (e.getSource() == viewAbsencesBtn) {
             new ViewAbsences(userId).setVisible(true);
-        }
-         else if (e.getSource() == viewLeavesBtn) {
+        } else if (e.getSource() == viewLeavesBtn) {
             try (Connection conn = ConnectionClass.getConnection()) {
                 String query = "SELECT employee_id FROM Employees WHERE user_id = ?";
                 try (PreparedStatement pstmt = conn.prepareStatement(query)) {
@@ -160,8 +159,7 @@ public class UserHome extends JFrame implements ActionListener {
                 ex.printStackTrace();
                 JOptionPane.showMessageDialog(null, "Error: " + ex.getMessage());
             }
-        }
-         else if (e.getSource() == requestLeaveBtn) {
+        } else if (e.getSource() == requestLeaveBtn) {
             new RequestLeave(userId).setVisible(true);
         } else if (e.getSource() == generateSlipBtn) {
             // new GenerateOwnSlip(userId).setVisible(true);
