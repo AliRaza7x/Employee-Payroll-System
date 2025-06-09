@@ -390,7 +390,7 @@ public class AdminPayroll extends JFrame {
         int option = JOptionPane.showConfirmDialog(this, message, "Set Grade Bonus", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
             try {
-                // This line must be **before** using selectedGrade anywhere
+                // This line must be *before* using selectedGrade anywhere
                 String selectedGrade = (String) gradeComboBox.getSelectedItem();
 
                 // Get the grade number (e.g., 10) from the map, NOT grade_id

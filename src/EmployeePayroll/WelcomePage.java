@@ -6,15 +6,15 @@ import javax.swing.*;
 
 public class WelcomePage extends JFrame implements ActionListener {
 
-    //Components for GUI
+    // Components for GUI
     JLabel titleLabel, imageLabel;
     JButton loginButton;
     Font titleFont, buttonFont;
 
     public WelcomePage() {
-        super("Welcome to Employee Payroll System");  //Title
-        setLocation(400, 200);         //Location on screen
-        setSize(600, 350);      //Size of window
+        super("Welcome to Employee Payroll System"); // Title
+        setLocation(400, 200); // Location on screen
+        setSize(600, 350); // Size of window
 
         titleFont = new Font("Arial", Font.BOLD, 25);
         buttonFont = new Font("Arial", Font.PLAIN, 18);
@@ -24,7 +24,7 @@ public class WelcomePage extends JFrame implements ActionListener {
         titleLabel.setHorizontalAlignment(JLabel.CENTER);
         titleLabel.setFont(titleFont);
 
-        //Image placement
+        // Image placement
         ImageIcon icon = new ImageIcon(ClassLoader.getSystemResource("Images/payment.png")); // Ensure this file exists
         Image img = icon.getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH); // Resizing
         imageLabel = new JLabel(new ImageIcon(img));
@@ -88,4 +88,3 @@ public class WelcomePage extends JFrame implements ActionListener {
         new WelcomePage().setVisible(true);
     }
 }
-
