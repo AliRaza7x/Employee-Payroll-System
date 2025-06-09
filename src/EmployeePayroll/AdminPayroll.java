@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.*;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -83,12 +84,12 @@ public class AdminPayroll extends JFrame {
         phoneField = createField("Phone:", labelX, fieldX, y); y += spacing;
         hireDateField = createField("Hire Date:", labelX, fieldX, y); y += spacing;
         baseSalaryField = createField("Base Salary:", labelX, fieldX, y); y += spacing;
-        absencesField = createField("Absences:", labelX, fieldX, y); y += spacing;
-        overtimeField = createField("Overtime:", labelX, fieldX, y); y += spacing;
+        absencesField = createField("Unexcused Absences:", labelX, fieldX, y); y += spacing;
+        overtimeField = createField("Overtime Hours:", labelX, fieldX, y); y += spacing;
         foodAllowanceField = createField("Food Allowance:", labelX, fieldX, y); y += spacing;
         absenceDeductionField = createField("Absence Deduction:", labelX, fieldX, y); y += spacing;
         bonusField = createField("Bonus:", labelX, fieldX, y); y += spacing;
-        deductionsField = createField("Deductions:", labelX, fieldX, y); y += spacing;
+        deductionsField = createField("Total Deductions:", labelX, fieldX, y); y += spacing;
         taxField = createField("Tax:", labelX, fieldX, y); y += spacing;
         netSalaryField = createField("Net Salary:", labelX, fieldX, y); y += spacing;
 
@@ -121,41 +122,23 @@ public class AdminPayroll extends JFrame {
         });
 
         editBtn.addActionListener(e -> {
-            overtimeField.setEditable(true);
             bonusField.setEditable(true);
+            foodAllowanceField.setEditable(true);
+            overtimeField.setEditable(true);
+            absenceDeductionField.setEditable(true);
         });
 
         confirmBtn.addActionListener(e -> {
             try {
                 int empId = Integer.parseInt(empIdInput.getText().trim());
-                int monthIndex = monthCombo.getSelectedIndex() + 1;
-                String monthStr = String.valueOf(monthIndex); // match database format
                 int year = (int) yearCombo.getSelectedItem();
+                int month = monthCombo.getSelectedIndex() + 1; // 1-based month index
+                String monthStr = String.valueOf(month);
 
-                int overtime = Integer.parseInt(overtimeField.getText().trim());
-                BigDecimal bonus = new BigDecimal(bonusField.getText().trim());
                 BigDecimal baseSalary = new BigDecimal(baseSalaryField.getText().trim());
-                BigDecimal absenceDeduction = new BigDecimal(absenceDeductionField.getText().trim());
                 BigDecimal foodAllowance = new BigDecimal(foodAllowanceField.getText().trim());
-
-                BigDecimal gross = baseSalary
-                        .add(new BigDecimal(overtime * 200))
-                        .add(foodAllowance)
-                        .add(bonus);
-
-                BigDecimal tax;
-                if (gross.compareTo(new BigDecimal(50000)) <= 0) {
-                    tax = BigDecimal.ZERO;
-                } else if (gross.compareTo(new BigDecimal(100000)) <= 0) {
-                    tax = gross.multiply(new BigDecimal("0.05"));
-                } else if (gross.compareTo(new BigDecimal(200000)) <= 0) {
-                    tax = gross.multiply(new BigDecimal("0.10"));
-                } else {
-                    tax = gross.multiply(new BigDecimal("0.15"));
-                }
-
-                BigDecimal totalDeductions = absenceDeduction.add(tax);
-                BigDecimal net = gross.subtract(totalDeductions);
+                int overtimeHours = Integer.parseInt(overtimeField.getText().trim());
+                BigDecimal absenceDeduction = new BigDecimal(absenceDeductionField.getText().trim());
 
                 try (Connection conn = ConnectionClass.getConnection()) {
                     if (conn == null) {
@@ -163,28 +146,59 @@ public class AdminPayroll extends JFrame {
                         return;
                     }
 
-                    CallableStatement stmt = conn.prepareCall("{call UpdatePayroll(?, ?, ?, ?, ?, ?)}");
+                    // Step 1: Get base bonus from procedure
+                    BigDecimal baseBonus = getBaseBonusFromProcedure(empId, month, year, conn);
+
+                    // Step 2: Get admin adjustment from field
+                    BigDecimal adminAdjustment;
+                    try {
+                        adminAdjustment = new BigDecimal(bonusField.getText().trim());
+                    } catch (NumberFormatException ex) {
+                        adminAdjustment = BigDecimal.ZERO;
+                    }
+
+                    // Step 3: Final bonus = base bonus + admin adjustment
+                    BigDecimal totalBonus = baseBonus.add(adminAdjustment);
+
+                    // Step 4: Calculate overtime pay
+                    BigDecimal overtimePay = new BigDecimal(overtimeHours).multiply(new BigDecimal("200")); // fixed rate
+                    BigDecimal totalDeductions = absenceDeduction; // extend as needed
+
+                    // Step 5: Calculate tax and net salary
+                    BigDecimal taxableAmount = baseSalary.add(totalBonus).add(overtimePay).add(foodAllowance).subtract(totalDeductions);
+                    BigDecimal tax = calculateTax(taxableAmount);
+                    BigDecimal netSalary = taxableAmount.subtract(tax);
+
+                    // Step 6: Call procedure to update payroll
+                    CallableStatement stmt = conn.prepareCall("{call UpdatePayroll(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}");
                     stmt.setInt(1, empId);
                     stmt.setString(2, monthStr);
                     stmt.setInt(3, year);
                     stmt.setBigDecimal(4, baseSalary);
-                    stmt.setBigDecimal(5, bonus);
+                    stmt.setBigDecimal(5, totalBonus);  // final computed bonus
                     stmt.setBigDecimal(6, totalDeductions);
-
+                    stmt.setBigDecimal(7, tax);
+                    stmt.setBigDecimal(8, absenceDeduction);
+                    stmt.setBigDecimal(9, foodAllowance);
+                    stmt.setInt(10, overtimeHours);
                     stmt.execute();
 
-                    taxField.setText(tax.toPlainString());
+                    // Step 7: Update UI
                     deductionsField.setText(totalDeductions.toPlainString());
-                    netSalaryField.setText(net.toPlainString());
+                    taxField.setText(tax.toPlainString());
+                    netSalaryField.setText(netSalary.toPlainString());
 
                     JOptionPane.showMessageDialog(this, "Payroll updated successfully.");
                 }
-
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
                 ex.printStackTrace();
             }
         });
+
+
+
+
 
 
 
@@ -217,16 +231,38 @@ public class AdminPayroll extends JFrame {
         addressField.setEditable(editable);
         phoneField.setEditable(editable);
         hireDateField.setEditable(editable);
-        baseSalaryField.setEditable(editable);
-        absencesField.setEditable(editable);
+        baseSalaryField.setEditable(false);
+        absencesField.setEditable(false);
         overtimeField.setEditable(editable);
         foodAllowanceField.setEditable(editable);
         absenceDeductionField.setEditable(editable);
         bonusField.setEditable(editable);
-        deductionsField.setEditable(editable);
-        taxField.setEditable(editable);
-        netSalaryField.setEditable(editable);
+        deductionsField.setEditable(false);
+        taxField.setEditable(false);
+        netSalaryField.setEditable(false);
     }
+    public BigDecimal getBaseBonusFromProcedure(int employeeId, int month, int year, Connection conn) {
+        BigDecimal baseBonus = BigDecimal.ZERO;
+
+        try (CallableStatement stmt = conn.prepareCall("{call GetBonusByGrade(?, ?, ?, ?)}")) {
+            stmt.setInt(1, employeeId);
+            stmt.setInt(2, month);
+            stmt.setInt(3, year);
+            stmt.registerOutParameter(4, java.sql.Types.DECIMAL);
+
+            stmt.execute();
+            baseBonus = stmt.getBigDecimal(4);
+            if (baseBonus == null) {
+                baseBonus = BigDecimal.ZERO;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            // Handle appropriately
+        }
+
+        return baseBonus;
+    }
+
 
     private void fetchPayrollData(int empId, int month, int year) {
         try (Connection conn = ConnectionClass.getConnection()) {
@@ -241,9 +277,9 @@ public class AdminPayroll extends JFrame {
             stmt.setInt(3, year);
 
             boolean hasResult = stmt.execute();
-
             if (hasResult) {
                 ResultSet rs = stmt.getResultSet();
+
                 if (rs.next()) {
                     nameField.setText(rs.getString("name"));
                     deptField.setText(rs.getString("department_name"));
@@ -256,25 +292,66 @@ public class AdminPayroll extends JFrame {
                     phoneField.setText(rs.getString("phone"));
                     hireDateField.setText(rs.getDate("hire_date").toString());
 
-                    baseSalaryField.setText(rs.getBigDecimal("BaseSalary").toString());
+                    baseSalaryField.setText(getSafeDecimal(rs, "BaseSalary"));
                     absencesField.setText(String.valueOf(rs.getInt("UnexcusedAbsences")));
                     overtimeField.setText(String.valueOf(rs.getInt("OvertimeHours")));
-                    foodAllowanceField.setText(rs.getBigDecimal("FoodAllowance").toString());
-                    absenceDeductionField.setText(rs.getBigDecimal("AbsenceDeduction").toString());
-                    bonusField.setText(rs.getBigDecimal("Bonus").toString());
-                    deductionsField.setText(rs.getBigDecimal("AbsenceDeduction").toString()); // optional: include food/tax etc.
-                    taxField.setText(rs.getBigDecimal("Tax").toString());
-                    netSalaryField.setText(rs.getBigDecimal("NetSalary").toString());
-                }
-            } else {
-                JOptionPane.showMessageDialog(this, "No payroll data found.");
-            }
+                    foodAllowanceField.setText(getSafeDecimal(rs, "FoodAllowance"));
+                    absenceDeductionField.setText(getSafeDecimal(rs, "AbsenceDeduction"));
+                    taxField.setText(getSafeDecimal(rs, "Tax"));
+                    netSalaryField.setText(getSafeDecimal(rs, "NetSalary"));
 
+                    // 🔁 NEW: Call GetBonusByGrade procedure
+                    BigDecimal baseBonus = getBaseBonusFromProcedure(empId, month, year, conn);
+                    bonusField.setText(baseBonus.toPlainString()); // Sets bonusField using procedure
+
+                    // If admin had made adjustment before, you can preserve/display that here too
+                } else {
+                    JOptionPane.showMessageDialog(this, "No payroll data found.");
+                }
+            }
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, "Error fetching payroll: " + ex.getMessage());
             ex.printStackTrace();
         }
     }
+
+
+
+    private String getSafeDecimal(ResultSet rs, String column) throws SQLException {
+        BigDecimal value = rs.getBigDecimal(column);
+        return (value != null) ? value.toPlainString() : "0.00";
+    }
+    private BigDecimal calculateTax(BigDecimal taxableAmount) {
+        BigDecimal tax = BigDecimal.ZERO;
+
+        BigDecimal slab1Limit = new BigDecimal("10000");
+        BigDecimal slab2Limit = new BigDecimal("30000");
+        BigDecimal slab3Limit = new BigDecimal("50000");
+
+        BigDecimal slab1Rate = new BigDecimal("0.05");  // 5%
+        BigDecimal slab2Rate = new BigDecimal("0.10");  // 10%
+        BigDecimal slab3Rate = new BigDecimal("0.15");  // 15%
+        BigDecimal slab4Rate = new BigDecimal("0.20");  // 20%
+
+        if (taxableAmount.compareTo(slab1Limit) <= 0) {
+            tax = taxableAmount.multiply(slab1Rate);
+        } else if (taxableAmount.compareTo(slab2Limit) <= 0) {
+            tax = slab1Limit.multiply(slab1Rate)
+                    .add(taxableAmount.subtract(slab1Limit).multiply(slab2Rate));
+        } else if (taxableAmount.compareTo(slab3Limit) <= 0) {
+            tax = slab1Limit.multiply(slab1Rate)
+                    .add(slab2Limit.subtract(slab1Limit).multiply(slab2Rate))
+                    .add(taxableAmount.subtract(slab2Limit).multiply(slab3Rate));
+        } else {
+            tax = slab1Limit.multiply(slab1Rate)
+                    .add(slab2Limit.subtract(slab1Limit).multiply(slab2Rate))
+                    .add(slab3Limit.subtract(slab2Limit).multiply(slab3Rate))
+                    .add(taxableAmount.subtract(slab3Limit).multiply(slab4Rate));
+        }
+
+        return tax.setScale(2, RoundingMode.HALF_UP);
+    }
+
 
     private void showSetGradeBonusDialog() {
         Map<String, Integer> gradeMap = new HashMap<>();
@@ -289,7 +366,8 @@ public class AdminPayroll extends JFrame {
                 int gradeValue = rs.getInt("grade");
                 String display = "Grade " + gradeValue;
 
-                gradeMap.put(display, gradeId);
+                // Store grade number (not grade_id) for passing to procedure
+                gradeMap.put(display, gradeValue);
                 gradeComboBox.addItem(display);
             }
 
@@ -312,8 +390,11 @@ public class AdminPayroll extends JFrame {
         int option = JOptionPane.showConfirmDialog(this, message, "Set Grade Bonus", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
             try {
+                // This line must be **before** using selectedGrade anywhere
                 String selectedGrade = (String) gradeComboBox.getSelectedItem();
-                int gradeId = gradeMap.get(selectedGrade);
+
+                // Get the grade number (e.g., 10) from the map, NOT grade_id
+                int grade = gradeMap.get(selectedGrade);
 
                 double bonusAmount = Double.parseDouble(bonusField.getText().trim());
                 int bonusMonth = Integer.parseInt(monthField.getText().trim());
@@ -321,22 +402,21 @@ public class AdminPayroll extends JFrame {
 
                 try (Connection conn = ConnectionClass.getConnection()) {
                     CallableStatement stmt = conn.prepareCall("{call SetGradeBonus(?, ?, ?, ?)}");
-                    stmt.setInt(1, gradeId);
+                    stmt.setInt(1, grade);  // Pass the actual grade number here
                     stmt.setInt(2, bonusMonth);
                     stmt.setInt(3, bonusYear);
-                    stmt.setBigDecimal(4, new java.math.BigDecimal(bonusAmount));
+                    stmt.setBigDecimal(4, new BigDecimal(bonusAmount));
                     stmt.execute();
 
                     JOptionPane.showMessageDialog(this, "Grade bonus set successfully.");
                 }
 
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "Please enter valid numeric values.");
-            } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, "Failed to set grade bonus: " + ex.getMessage());
+            } catch (NumberFormatException | SQLException ex) {
+                JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
             }
         }
     }
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(AdminPayroll::new);
