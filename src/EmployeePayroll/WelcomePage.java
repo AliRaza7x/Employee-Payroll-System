@@ -8,7 +8,7 @@ public class WelcomePage extends JFrame implements ActionListener {
 
     // Components for GUI
     JLabel titleLabel, imageLabel;
-    JButton loginButton;
+    JButton loginButton, exitButton;
     Font titleFont, buttonFont;
 
     public WelcomePage() {
@@ -29,13 +29,16 @@ public class WelcomePage extends JFrame implements ActionListener {
         Image img = icon.getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH); // Resizing
         imageLabel = new JLabel(new ImageIcon(img));
 
-        // Adding two buttons for login and sign up
+        // Adding two buttons for login and system closure
         loginButton = new JButton("Login");
         loginButton.setFont(buttonFont);
-
         loginButton.setPreferredSize(new Dimension(120, 40));
-
         loginButton.addActionListener(this);
+
+        exitButton = new JButton("Exit");
+        exitButton.setFont(buttonFont);
+        exitButton.setPreferredSize(new Dimension(120, 40));
+        exitButton.addActionListener(this);
 
         // Panel for Buttons
         JPanel buttonPanel = new JPanel();
@@ -46,6 +49,10 @@ public class WelcomePage extends JFrame implements ActionListener {
         gbc.gridx = 0;
         gbc.gridy = 0;
         buttonPanel.add(loginButton, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        buttonPanel.add(exitButton, gbc);
 
         // Main Panel
         JPanel mainPanel = new JPanel(new GridBagLayout());
@@ -81,6 +88,9 @@ public class WelcomePage extends JFrame implements ActionListener {
         if (e.getSource() == loginButton) {
             new Login().setVisible(true);
             this.setVisible(false);
+        }
+        else if (e.getSource() == exitButton) {
+            System.exit(0);
         }
     }
 
