@@ -1,9 +1,6 @@
 package EmployeePayroll;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-
 import java.awt.*;
 import java.awt.event.*;
 import java.math.BigDecimal;
@@ -75,44 +72,25 @@ public class AdminPayroll extends JFrame {
 
         int labelX = 30, fieldX = 150, y = 100, spacing = 30;
 
-        nameField = createField("Name:", labelX, fieldX, y);
-        y += spacing;
-        deptField = createField("Department:", labelX, fieldX, y);
-        y += spacing;
-        gradeField = createField("Grade:", labelX, fieldX, y);
-        y += spacing;
-        genderField = createField("Gender:", labelX, fieldX, y);
-        y += spacing;
-        typeField = createField("Type:", labelX, fieldX, y);
-        y += spacing;
-        emailField = createField("Email:", labelX, fieldX, y);
-        y += spacing;
-        cnicField = createField("CNIC:", labelX, fieldX, y);
-        y += spacing;
-        addressField = createField("Address:", labelX, fieldX, y);
-        y += spacing;
-        phoneField = createField("Phone:", labelX, fieldX, y);
-        y += spacing;
-        hireDateField = createField("Hire Date:", labelX, fieldX, y);
-        y += spacing;
-        baseSalaryField = createField("Base Salary:", labelX, fieldX, y);
-        y += spacing;
-        absencesField = createField("Absences:", labelX, fieldX, y);
-        y += spacing;
-        overtimeField = createField("Overtime:", labelX, fieldX, y);
-        y += spacing;
-        foodAllowanceField = createField("Food Allowance:", labelX, fieldX, y);
-        y += spacing;
-        absenceDeductionField = createField("Absence Deduction:", labelX, fieldX, y);
-        y += spacing;
-        bonusField = createField("Bonus:", labelX, fieldX, y);
-        y += spacing;
-        deductionsField = createField("Deductions:", labelX, fieldX, y);
-        y += spacing;
-        taxField = createField("Tax:", labelX, fieldX, y);
-        y += spacing;
-        netSalaryField = createField("Net Salary:", labelX, fieldX, y);
-        y += spacing;
+        nameField = createField("Name:", labelX, fieldX, y); y += spacing;
+        deptField = createField("Department:", labelX, fieldX, y); y += spacing;
+        gradeField = createField("Grade:", labelX, fieldX, y); y += spacing;
+        genderField = createField("Gender:", labelX, fieldX, y); y += spacing;
+        typeField = createField("Type:", labelX, fieldX, y); y += spacing;
+        emailField = createField("Email:", labelX, fieldX, y); y += spacing;
+        cnicField = createField("CNIC:", labelX, fieldX, y); y += spacing;
+        addressField = createField("Address:", labelX, fieldX, y); y += spacing;
+        phoneField = createField("Phone:", labelX, fieldX, y); y += spacing;
+        hireDateField = createField("Hire Date:", labelX, fieldX, y); y += spacing;
+        baseSalaryField = createField("Base Salary:", labelX, fieldX, y); y += spacing;
+        absencesField = createField("Absences:", labelX, fieldX, y); y += spacing;
+        overtimeField = createField("Overtime:", labelX, fieldX, y); y += spacing;
+        foodAllowanceField = createField("Food Allowance:", labelX, fieldX, y); y += spacing;
+        absenceDeductionField = createField("Absence Deduction:", labelX, fieldX, y); y += spacing;
+        bonusField = createField("Bonus:", labelX, fieldX, y); y += spacing;
+        deductionsField = createField("Deductions:", labelX, fieldX, y); y += spacing;
+        taxField = createField("Tax:", labelX, fieldX, y); y += spacing;
+        netSalaryField = createField("Net Salary:", labelX, fieldX, y); y += spacing;
 
         setEditableFields(false);
 
@@ -145,34 +123,6 @@ public class AdminPayroll extends JFrame {
         editBtn.addActionListener(e -> {
             overtimeField.setEditable(true);
             bonusField.setEditable(true);
-
-            // Attach document listeners ONCE in the constructor
-            overtimeField.getDocument().addDocumentListener(new DocumentListener() {
-                public void changedUpdate(DocumentEvent e) {
-                    calculateNetSalary();
-                }
-
-                public void removeUpdate(DocumentEvent e) {
-                    calculateNetSalary();
-                }
-
-                public void insertUpdate(DocumentEvent e) {
-                    calculateNetSalary();
-                }
-            });
-            bonusField.getDocument().addDocumentListener(new DocumentListener() {
-                public void changedUpdate(DocumentEvent e) {
-                    calculateNetSalary();
-                }
-
-                public void removeUpdate(DocumentEvent e) {
-                    calculateNetSalary();
-                }
-
-                public void insertUpdate(DocumentEvent e) {
-                    calculateNetSalary();
-                }
-            });
         });
 
         confirmBtn.addActionListener(e -> {
@@ -235,6 +185,8 @@ public class AdminPayroll extends JFrame {
                 ex.printStackTrace();
             }
         });
+
+
 
         backBtn.addActionListener(e -> dispose());
         setBonusBtn.addActionListener(e -> showSetGradeBonusDialog());
@@ -310,8 +262,7 @@ public class AdminPayroll extends JFrame {
                     foodAllowanceField.setText(rs.getBigDecimal("FoodAllowance").toString());
                     absenceDeductionField.setText(rs.getBigDecimal("AbsenceDeduction").toString());
                     bonusField.setText(rs.getBigDecimal("Bonus").toString());
-                    deductionsField.setText(rs.getBigDecimal("AbsenceDeduction").toString()); // optional: include
-                                                                                              // food/tax etc.
+                    deductionsField.setText(rs.getBigDecimal("AbsenceDeduction").toString()); // optional: include food/tax etc.
                     taxField.setText(rs.getBigDecimal("Tax").toString());
                     netSalaryField.setText(rs.getBigDecimal("NetSalary").toString());
                 }
@@ -330,7 +281,7 @@ public class AdminPayroll extends JFrame {
         JComboBox<String> gradeComboBox = new JComboBox<>();
 
         try (Connection conn = ConnectionClass.getConnection();
-                PreparedStatement stmt = conn.prepareStatement("SELECT grade_id, grade FROM Grades")) {
+             PreparedStatement stmt = conn.prepareStatement("SELECT grade_id, grade FROM Grades")) {
 
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
@@ -384,57 +335,6 @@ public class AdminPayroll extends JFrame {
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(this, "Failed to set grade bonus: " + ex.getMessage());
             }
-        }
-    }
-
-    private void calculateNetSalary() {
-        try {
-            int overtime = parseIntOrZero(overtimeField.getText().trim());
-            BigDecimal bonus = parseBigDecimalOrZero(bonusField.getText().trim());
-            BigDecimal baseSalary = parseBigDecimalOrZero(baseSalaryField.getText().trim());
-            BigDecimal absenceDeduction = parseBigDecimalOrZero(absenceDeductionField.getText().trim());
-            BigDecimal foodAllowance = parseBigDecimalOrZero(foodAllowanceField.getText().trim());
-
-            BigDecimal gross = baseSalary
-                    .add(new BigDecimal(overtime * 200))
-                    .add(foodAllowance)
-                    .add(bonus);
-
-            BigDecimal tax;
-            if (gross.compareTo(new BigDecimal(50000)) <= 0) {
-                tax = BigDecimal.ZERO;
-            } else if (gross.compareTo(new BigDecimal(100000)) <= 0) {
-                tax = gross.multiply(new BigDecimal("0.05"));
-            } else if (gross.compareTo(new BigDecimal(200000)) <= 0) {
-                tax = gross.multiply(new BigDecimal("0.10"));
-            } else {
-                tax = gross.multiply(new BigDecimal("0.15"));
-            }
-
-            BigDecimal totalDeductions = absenceDeduction.add(tax);
-            BigDecimal net = gross.subtract(totalDeductions);
-
-            taxField.setText(tax.toPlainString());
-            deductionsField.setText(totalDeductions.toPlainString());
-            netSalaryField.setText(net.toPlainString());
-        } catch (Exception ex) {
-            // Ignore invalid input while typing
-        }
-    }
-
-    private int parseIntOrZero(String s) {
-        try {
-            return Integer.parseInt(s);
-        } catch (Exception e) {
-            return 0;
-        }
-    }
-
-    private BigDecimal parseBigDecimalOrZero(String s) {
-        try {
-            return new BigDecimal(s);
-        } catch (Exception e) {
-            return BigDecimal.ZERO;
         }
     }
 

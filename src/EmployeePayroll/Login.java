@@ -5,7 +5,7 @@ import java.sql.*;
 import java.awt.event.*;
 import javax.swing.*;
 
-public class Login extends JFrame implements ActionListener, KeyListener {
+public class Login extends JFrame implements ActionListener {
     JLabel l1, l2, l3, l4;
     JTextField textField;
     JPasswordField passwordField;
@@ -34,10 +34,6 @@ public class Login extends JFrame implements ActionListener, KeyListener {
         passwordField = new JPasswordField();
         textField.setFont(f2);
         passwordField.setFont(f2);
-
-        // Add key listeners to both fields
-        textField.addKeyListener(this);
-        passwordField.addKeyListener(this);
 
         bt1 = new JButton("Login");
         bt2 = new JButton("Cancel");
@@ -72,62 +68,43 @@ public class Login extends JFrame implements ActionListener, KeyListener {
     }
 
     public void actionPerformed(ActionEvent e) {
+        String username = textField.getText();
+        String password = passwordField.getText();
+
         if (e.getSource() == bt1) {
-            performLogin();
+            try {
+                ConnectionClass obj = new ConnectionClass();
+                String query = "SELECT user_id, role FROM users WHERE username = ? AND password = ?";
+                PreparedStatement pst = obj.con.prepareStatement(query);
+                pst.setString(1, username);
+                pst.setString(2, password);
+                ResultSet rs = pst.executeQuery();
+
+                if (rs.next()) {
+                    int userId = rs.getInt("user_id");
+                    String role = rs.getString("role");
+
+                    if ("admin".equalsIgnoreCase(role)) {
+                        new NormalAdminHome().setVisible(true);
+                    } else if ("user".equalsIgnoreCase(role)) {
+                        new UserHome(userId).setVisible(true); // ✅ pass userId
+                    } else if ("superadmin".equalsIgnoreCase(role)) {
+                        new AdminHome().setVisible(true);
+                    }
+                    this.setVisible(false);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Invalid username or password.");
+                }
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Connection failed. Please try again.");
+            }
         }
+
         if (e.getSource() == bt2) {
             new WelcomePage().setVisible(true);
             this.setVisible(false);
         }
-    }
-
-    // New method to handle login
-    private void performLogin() {
-        String username = textField.getText();
-        String password = passwordField.getText();
-
-        try {
-            ConnectionClass obj = new ConnectionClass();
-            String query = "SELECT user_id, role FROM users WHERE username = ? AND password = ?";
-            PreparedStatement pst = obj.con.prepareStatement(query);
-            pst.setString(1, username);
-            pst.setString(2, password);
-            ResultSet rs = pst.executeQuery();
-
-            if (rs.next()) {
-                int userId = rs.getInt("user_id");
-                String role = rs.getString("role");
-
-                if ("admin".equalsIgnoreCase(role)) {
-                    new NormalAdminHome().setVisible(true);
-                } else if ("user".equalsIgnoreCase(role)) {
-                    new UserHome(userId).setVisible(true);
-                } else if ("superadmin".equalsIgnoreCase(role)) {
-                    new AdminHome().setVisible(true);
-                }
-                this.setVisible(false);
-            } else {
-                JOptionPane.showMessageDialog(null, "Invalid username or password.");
-            }
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Connection failed. Please try again.");
-        }
-    }
-
-    // Implement KeyListener methods
-    public void keyPressed(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-            performLogin();
-        }
-    }
-
-    public void keyReleased(KeyEvent e) {
-        // Not needed for this functionality
-    }
-
-    public void keyTyped(KeyEvent e) {
-        // Not needed for this functionality
     }
 }
