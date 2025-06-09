@@ -36,7 +36,10 @@ public class UserHome extends JFrame implements ActionListener {
         exitBtn.setBorderPainted(false);
         exitBtn.setContentAreaFilled(false);
         exitBtn.setFocusPainted(false);
-        exitBtn.addActionListener(e -> System.exit(0));
+        exitBtn.addActionListener(e -> {
+            this.setVisible(false);
+            new Login().setVisible(true);
+        });
         background.add(exitBtn);
 
         // Font for buttons

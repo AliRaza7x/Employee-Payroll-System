@@ -87,19 +87,19 @@ public class AdminHome extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == addEmpBtn) {
-             new AddEmployee().setVisible(true);
+             new AddEmployee(this).setVisible(true);
         } else if (e.getSource() == addAdminBtn) {
-             new AddAdmin().setVisible(true);
+             new AddAdmin(this).setVisible(true);
         } else if (e.getSource() == searchEmpBtn) {
-             new SearchEmployee().setVisible(true);
+             new SearchEmployee(this).setVisible(true);
         } else if (e.getSource() == deleteEmpBtn) {
-             new DeleteEmployee().setVisible(true);
+             new DeleteEmployee(this).setVisible(true);
         } else if (e.getSource() == updateEmpBtn) {
-            new UpdateEmployee().setVisible(true);
+            new UpdateEmployee(this).setVisible(true);
         } else if (e.getSource() == generatePayrollBtn) {
-             new AdminPayroll().setVisible(true);
+             new AdminPayroll(this).setVisible(true);
         } else if (e.getSource() == viewAllbtn) {
-             new ViewAllEmployees().setVisible(true);
+             new ViewAllEmployees(this).setVisible(true);
         } else if (e.getSource() == leavebtn) {
             new ApproveRejectLeaves(this).setVisible(true);
         }

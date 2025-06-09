@@ -8,12 +8,13 @@ import java.awt.event.ActionListener;
 import java.sql.*;
 
 public class DeleteEmployee extends JFrame {
-
+    private JFrame parentDashboard;
     private JTextField empIdField;
     private JTable employeeTable;
     private DefaultTableModel tableModel;
 
-    public DeleteEmployee() {
+    public DeleteEmployee(JFrame parentDashboard) {
+        this.parentDashboard = parentDashboard;
         setTitle("Delete Employee By ID");
         setSize(750, 400);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

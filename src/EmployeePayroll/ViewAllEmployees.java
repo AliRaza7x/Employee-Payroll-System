@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ViewAllEmployees extends JFrame {
-
+    private JFrame parentDashboard;
     private JTable employeeTable;
     private DefaultTableModel tableModel;
     private JComboBox<String> departmentCombo;
@@ -18,7 +18,8 @@ public class ViewAllEmployees extends JFrame {
     private Map<String, Integer> gradeMap;
     private Map<String, Integer> typeMap;
 
-    public ViewAllEmployees() {
+    public ViewAllEmployees(JFrame parentDashboard) {
+        this.parentDashboard = parentDashboard;
         setTitle("View All Employees");
         setSize(1100, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -117,7 +118,7 @@ public class ViewAllEmployees extends JFrame {
         JButton backButton = new JButton("Back");
         backButton.addActionListener(e -> {
             dispose();
-            new AdminHome().setVisible(true);
+            parentDashboard.setVisible(true);
         });
 
         setLayout(new BorderLayout());
@@ -190,7 +191,7 @@ public class ViewAllEmployees extends JFrame {
         applyFilters(); // Initial load with all filters set to "All"
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new ViewAllEmployees().setVisible(true));
-    }
+//    public static void main(String[] args) {
+//        SwingUtilities.invokeLater(() -> new ViewAllEmployees().setVisible(true));
+//    }
 }

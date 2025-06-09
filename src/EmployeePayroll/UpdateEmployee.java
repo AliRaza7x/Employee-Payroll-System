@@ -10,8 +10,10 @@ public class UpdateEmployee extends JFrame {
     private JRadioButton maleButton, femaleButton, otherButton;
     private JComboBox<String> employeeTypeComboBox, departmentComboBox, gradeComboBox;
     private JButton updateButton, cancelButton, fetchButton;
+    private JFrame parentDashboard;
 
-    public UpdateEmployee() {
+    public UpdateEmployee(JFrame parentDashboard) {
+        this.parentDashboard = parentDashboard;
         setTitle("Update Employee");
         setSize(400, 500);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -81,7 +83,7 @@ public class UpdateEmployee extends JFrame {
         updateButton.addActionListener(e -> updateEmployee());
         cancelButton.addActionListener(e -> {
             dispose();
-            new AdminHome().setVisible(true);
+            parentDashboard.setVisible(true);
         });
 
         setVisible(true);
@@ -142,9 +144,5 @@ public class UpdateEmployee extends JFrame {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error updating employee.");
         }
-    }
-
-    public static void main(String[] args) {
-        new UpdateEmployee();
     }
 }

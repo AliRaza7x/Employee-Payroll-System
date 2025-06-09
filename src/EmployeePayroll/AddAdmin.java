@@ -7,8 +7,10 @@ public class AddAdmin extends JFrame {
     JTextField usernameField;
     JPasswordField passwordField;
     JLabel userIdLabel;
+    private JFrame parentDashboard;
 
-    public AddAdmin() {
+    public AddAdmin(JFrame parentDashboard) {
+        this.parentDashboard = parentDashboard;
         setTitle("Add New Admin");
         setSize(400, 250);
         setLayout(new GridLayout(5, 2, 10, 10));
@@ -53,7 +55,7 @@ public class AddAdmin extends JFrame {
         });
 
         backBtn.addActionListener(e -> {
-            new AdminHome().setVisible(true);
+            parentDashboard.setVisible(true);
             this.setVisible(false);
         });
 

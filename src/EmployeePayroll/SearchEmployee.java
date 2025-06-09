@@ -8,12 +8,13 @@ import java.awt.event.ActionListener;
 import java.sql.*;
 
 public class SearchEmployee extends JFrame {
-
+    private JFrame parentDashboard;
     private JTextField empIdField;
     private JTable employeeTable;
     private DefaultTableModel tableModel;
 
-    public SearchEmployee() {
+    public SearchEmployee(JFrame parentDashboard) {
+        this.parentDashboard = parentDashboard;
         setTitle("Search Employee By ID");
         setSize(700, 400);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -62,7 +63,7 @@ public class SearchEmployee extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 dispose();
-                new AdminHome().setVisible(true);
+                parentDashboard.setVisible(true);
             }
         });
     }

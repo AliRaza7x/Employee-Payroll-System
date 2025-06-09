@@ -15,7 +15,7 @@ public class AddEmployee extends JFrame {
     private JComboBox<String> employeeTypeComboBox, departmentComboBox, gradeComboBox;
     private JButton addButton, cancelButton;
     String username, password;
-
+    private JFrame parentDashboard;
     private int userId;
 
     // Basic ID lists for selected values
@@ -23,7 +23,8 @@ public class AddEmployee extends JFrame {
     private ArrayList<Integer> departmentIds = new ArrayList<>();
     private ArrayList<Integer> gradeIds = new ArrayList<>();
 
-    public AddEmployee() {
+    public AddEmployee(JFrame parentDashboard) {
+        this.parentDashboard = parentDashboard;
         setTitle("Add Employee");
         setSize(400, 500);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -106,7 +107,7 @@ public class AddEmployee extends JFrame {
         cancelButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 dispose();
-                new AdminHome().setVisible(true);
+                parentDashboard.setVisible(true);
             }
         });
 
@@ -270,9 +271,5 @@ public class AddEmployee extends JFrame {
             e.printStackTrace();
             return null;
         }
-    }
-
-    public static void main(String[] args) {
-        new AddEmployee();
     }
 }

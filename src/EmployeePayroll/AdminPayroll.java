@@ -15,13 +15,14 @@ public class AdminPayroll extends JFrame {
     JComboBox<String> monthCombo;
     JComboBox<Integer> yearCombo;
     JButton fetchBtn, editBtn, confirmBtn, backBtn, setBonusBtn;
-
+    private JFrame parentDashboard;
     JTextField nameField, deptField, gradeField, genderField, typeField,
             emailField, cnicField, addressField, phoneField, hireDateField,
             baseSalaryField, absencesField, overtimeField, foodAllowanceField, absenceDeductionField,
             bonusField, deductionsField, taxField, netSalaryField;
 
-    public AdminPayroll() {
+    public AdminPayroll(JFrame parentDashboard) {
+        this.parentDashboard = parentDashboard;
         setTitle("Employee Payroll Details");
         setSize(700, 850);
         setLocationRelativeTo(null);
@@ -196,13 +197,10 @@ public class AdminPayroll extends JFrame {
             }
         });
 
-
-
-
-
-
-
-        backBtn.addActionListener(e -> dispose());
+        backBtn.addActionListener(e -> {
+            parentDashboard.setVisible(true);
+            dispose();
+        });
         setBonusBtn.addActionListener(e -> showSetGradeBonusDialog());
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -415,10 +413,5 @@ public class AdminPayroll extends JFrame {
                 JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
             }
         }
-    }
-
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(AdminPayroll::new);
     }
 }
