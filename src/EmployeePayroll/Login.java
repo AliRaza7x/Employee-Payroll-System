@@ -9,7 +9,7 @@ public class Login extends JFrame implements ActionListener {
     JLabel l1, l2, l3, l4;
     JTextField textField;
     JPasswordField passwordField;
-    JPanel p1, p2, p3;
+    JPanel p1, p2, p3, pMain;
     JButton bt1, bt2;
     Font f1, f2;
 
@@ -55,6 +55,11 @@ public class Login extends JFrame implements ActionListener {
         p1.add(bt1);
         p1.add(bt2);
 
+        // Wrap p1 in a new panel with padding
+        pMain = new JPanel(new BorderLayout());
+        pMain.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20)); // Top, Left, Bottom, Right padding
+        pMain.add(p1, BorderLayout.CENTER);
+
         p2 = new JPanel(new GridLayout(1, 1, 10, 10));
         p2.add(l1);
 
@@ -64,7 +69,7 @@ public class Login extends JFrame implements ActionListener {
         setLayout(new BorderLayout(10, 20));
         add(p2, "North");
         add(p3, "East");
-        add(p1, "Center");
+        add(pMain, "Center"); // add padded panel
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -87,7 +92,7 @@ public class Login extends JFrame implements ActionListener {
                     if ("admin".equalsIgnoreCase(role)) {
                         new NormalAdminHome().setVisible(true);
                     } else if ("user".equalsIgnoreCase(role)) {
-                        new UserHome(userId).setVisible(true); // ✅ pass userId
+                        new UserHome(userId).setVisible(true);
                     } else if ("superadmin".equalsIgnoreCase(role)) {
                         new AdminHome().setVisible(true);
                     }

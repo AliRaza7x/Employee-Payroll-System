@@ -185,14 +185,41 @@ public class AddEmployee extends JFrame {
         String hireDate = hireDateField.getText();
         String gender = maleButton.isSelected() ? "Male" : femaleButton.isSelected() ? "Female" : otherButton.isSelected() ? "Other" : "";
 
-        int employeeTypeId = employeeTypeIds.get(employeeTypeComboBox.getSelectedIndex());
-        int departmentId = departmentIds.get(departmentComboBox.getSelectedIndex());
-        int gradeId = gradeIds.get(gradeComboBox.getSelectedIndex());
+        // === Input Validations ===
+
+        if (name.trim().isEmpty() || !name.matches("[a-zA-Z\\s]+")) {
+            JOptionPane.showMessageDialog(this, "Please enter a valid name (letters and spaces only).");
+            return;
+        }
+
+        if (phone.trim().isEmpty() || !phone.matches("\\d{11}")) {
+            JOptionPane.showMessageDialog(this, "Please enter a valid 11-digit phone number.");
+            return;
+        }
+
+        if (address.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Address cannot be empty.");
+            return;
+        }
+
+        if (cnic.trim().isEmpty() || !cnic.matches("\\d{5}-\\d{7}-\\d")) {
+            JOptionPane.showMessageDialog(this, "Please enter a valid CNIC (e.g., 12345-1234567-1).");
+            return;
+        }
 
         if (gender.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Please select a gender.");
             return;
         }
+
+        if (hireDate.trim().isEmpty() || !hireDate.matches("\\d{4}-\\d{2}-\\d{2}")) {
+            JOptionPane.showMessageDialog(this, "Please enter a valid hire date in format YYYY-MM-DD.");
+            return;
+        }
+
+        int employeeTypeId = employeeTypeIds.get(employeeTypeComboBox.getSelectedIndex());
+        int departmentId = departmentIds.get(departmentComboBox.getSelectedIndex());
+        int gradeId = gradeIds.get(gradeComboBox.getSelectedIndex());
 
         try (Connection conn = ConnectionClass.getConnection()) {
 
@@ -220,7 +247,6 @@ public class AddEmployee extends JFrame {
             cs.setString(11, hireDate);
             cs.execute();
 
-//            JOptionPane.showMessageDialog(this, "Employee added successfully with username " + username + " and password " + password);
             String message = "Employee added successfully!\n\nUsername: " + username + "\nPassword: " + password;
 
             Object[] options = {"Copy", "OK"};
@@ -246,6 +272,7 @@ public class AddEmployee extends JFrame {
             JOptionPane.showMessageDialog(this, "Error adding employee.");
         }
     }
+
 
     private String generateRandomString(int length) {
         String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";

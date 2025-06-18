@@ -1,6 +1,7 @@
 package EmployeePayroll;
 import javax.swing.*;
 import java.awt.*;
+import java.security.MessageDigest;
 import java.sql.*;
 
 public class AddAdmin extends JFrame {
@@ -8,6 +9,7 @@ public class AddAdmin extends JFrame {
     JPasswordField passwordField;
     JLabel userIdLabel;
     private JFrame parentDashboard;
+    String password;
 
     public AddAdmin(JFrame parentDashboard) {
         this.parentDashboard = parentDashboard;
@@ -32,13 +34,28 @@ public class AddAdmin extends JFrame {
         add(userIdLabel);
 
         okBtn.addActionListener(e -> {
+            String username = usernameField.getText().trim();
+            String password = new String(passwordField.getPassword()).trim();
+            String hashedPassword = hashPassword(password);
+
+            // === Input Validation ===
+            if (username.isEmpty() || !username.matches("[a-zA-Z0-9_]+")) {
+                JOptionPane.showMessageDialog(this, "Please enter a valid username (letters, digits, and underscores only).");
+                return;
+            }
+
+            if (password.isEmpty() || password.length() < 8) {
+                JOptionPane.showMessageDialog(this, "Password must be at least 8 characters long.");
+                return;
+            }
+
             try {
                 ConnectionClass connectionClass = new ConnectionClass();
                 Connection con = connectionClass.con;
 
                 CallableStatement stmt = con.prepareCall("{call InsertUser(?, ?, ?, ?)}");
-                stmt.setString(1, usernameField.getText());
-                stmt.setString(2, new String(passwordField.getPassword()));
+                stmt.setString(1, username);
+                stmt.setString(2, hashedPassword);
                 stmt.setString(3, "admin");
                 stmt.registerOutParameter(4, Types.INTEGER);
                 stmt.execute();
@@ -54,6 +71,7 @@ public class AddAdmin extends JFrame {
             }
         });
 
+
         backBtn.addActionListener(e -> {
             parentDashboard.setVisible(true);
             this.setVisible(false);
@@ -62,5 +80,20 @@ public class AddAdmin extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setVisible(true);
+    }
+
+    public static String hashPassword(String password) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            byte[] hashedBytes = md.digest(password.getBytes());
+            StringBuilder sb = new StringBuilder();
+            for (byte b : hashedBytes) {
+                sb.append(String.format("%02x", b));
+            }
+            return sb.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
